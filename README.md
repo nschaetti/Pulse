@@ -104,4 +104,7 @@ cargo check --all-targets
 cargo fmt -- --check
 cargo clippy --all-targets -- -D warnings
 cargo test
+cargo bench
 ```
+
+Benchmark policy is report-only for now; see `docs/perf.md`.

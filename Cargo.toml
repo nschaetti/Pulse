@@ -12,3 +12,18 @@ categories = ["command-line-interface"]
 
 [dependencies]
 crossterm = "0.28"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "frame_bench"
+harness = false
+
+[[bench]]
+name = "layout_bench"
+harness = false
+
+[[bench]]
+name = "command_bench"
+harness = false
