@@ -42,6 +42,19 @@ It is useful for:
 - scaffolding interfaces before richer widgets,
 - debugging area allocation.
 
+## Block and List
+
+`Block` draws a Unicode box (`┌ ┐ └ ┘ │ ─`) and optional title.
+
+- Use `Block::new().title("...")` to frame sections.
+- Use `block.inner_area(area)` to render content inside borders.
+
+`List` renders selectable entries with basic scrolling.
+
+- Use `List::new(items).selected(index)`.
+- Selected entry is kept visible in the viewport.
+- Rendering is clipped to the provided area.
+
 ## Reference Example
 
 See `examples/interface_layout.rs` for a complete partitioned interface shell.

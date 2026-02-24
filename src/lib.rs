@@ -16,4 +16,6 @@ pub use frame::Frame;
 pub use layout::Rect;
 pub use runtime::run;
 pub use runtime::run_with_events;
-pub use ui::{Constraint, Direction, LayoutNode, Padding, ResolvedLayout, Slot, Text, Zone};
+pub use ui::{
+    Block, Constraint, Direction, LayoutNode, List, Padding, ResolvedLayout, Slot, Text, Zone,
+};

@@ -79,6 +79,9 @@ cargo run --example emit
 cargo run --example events
 cargo run --example composition
 cargo run --example interface_layout
+cargo run --example admin_console
+cargo run --example settings
+cargo run --example log_explorer
 cargo run --example layout_demo
 cargo run --example clipping
 cargo run --example diff
@@ -96,6 +99,7 @@ cargo run --example resize
 - `Rect`: basic layout primitive with horizontal/vertical splits
 - `LayoutNode` + `Constraint` (`Fixed`, `Percent`, `Fill`): partition trees for screen structure
 - `Padding` + `Text`: simple primitives to visualize and populate resolved zones
+- `Block` + `List`: baseline widgets for framed sections and scrollable selection
 - `Component` and `update_child`: parent/child composition with lifted messages
 
 ## Guides

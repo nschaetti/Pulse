@@ -171,6 +171,121 @@ impl Text {
     }
 }
 
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct Block {
+    title: Option<String>,
+}
+
+impl Block {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn inner_area(&self, area: Rect) -> Rect {
+        Rect::new(
+            area.x.saturating_add(1),
+            area.y.saturating_add(1),
+            area.width.saturating_sub(2),
+            area.height.saturating_sub(2),
+        )
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        if area.width < 2 || area.height < 2 {
+            return;
+        }
+
+        let horizontal = "─".repeat(area.width.saturating_sub(2) as usize);
+        frame.render_in(area, |frame| {
+            frame.print(0, 0, "┌");
+            frame.print(1, 0, &horizontal);
+            frame.print(area.width.saturating_sub(1), 0, "┐");
+
+            for y in 1..area.height.saturating_sub(1) {
+                frame.print(0, y, "│");
+                frame.print(area.width.saturating_sub(1), y, "│");
+            }
+
+            frame.print(0, area.height.saturating_sub(1), "└");
+            frame.print(1, area.height.saturating_sub(1), &horizontal);
+            frame.print(
+                area.width.saturating_sub(1),
+                area.height.saturating_sub(1),
+                "┘",
+            );
+
+            if let Some(title) = &self.title {
+                let available = area.width.saturating_sub(2) as usize;
+                if available > 0 {
+                    let decorated = format!(" {} ", title);
+                    let truncated: String = decorated.chars().take(available).collect();
+                    frame.print(1, 0, &truncated);
+                }
+            }
+        });
+    }
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct List {
+    items: Vec<String>,
+    selected: Option<usize>,
+}
+
+impl List {
+    pub fn new<I, S>(items: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: Into<String>,
+    {
+        Self {
+            items: items.into_iter().map(Into::into).collect(),
+            selected: None,
+        }
+    }
+
+    pub fn selected(mut self, selected: usize) -> Self {
+        self.selected = Some(selected);
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        if area.width == 0 || area.height == 0 || self.items.is_empty() {
+            return;
+        }
+
+        let viewport_height = area.height as usize;
+        let selected = self
+            .selected
+            .unwrap_or(0)
+            .min(self.items.len().saturating_sub(1));
+        let start = scroll_start(selected, viewport_height, self.items.len());
+        let end = (start + viewport_height).min(self.items.len());
+
+        frame.render_in(area, |frame| {
+            for (row, idx) in (start..end).enumerate() {
+                let marker = if idx == selected { '›' } else { ' ' };
+                frame.print(0, row as u16, &format!("{} {}", marker, self.items[idx]));
+            }
+        });
+    }
+}
+
+fn scroll_start(selected: usize, viewport_height: usize, len: usize) -> usize {
+    if viewport_height == 0 || len == 0 {
+        return 0;
+    }
+
+    let max_start = len.saturating_sub(viewport_height);
+    let follow = selected.saturating_add(1).saturating_sub(viewport_height);
+    follow.min(max_start)
+}
+
 fn resolve_node(node: &LayoutNode, area: Rect, zones: &mut Vec<Zone>) {
     let area = node.padding.apply(area);
     zones.push(Zone {
@@ -281,7 +396,7 @@ fn resolve_sizes(total: u16, children: &[Slot]) -> Vec<u16> {
 mod tests {
     use crate::Frame;
 
-    use super::{Constraint, Direction, LayoutNode, Padding, Slot, Text};
+    use super::{Block, Constraint, Direction, LayoutNode, List, Padding, Slot, Text};
     use crate::Rect;
 
     #[test]
@@ -359,5 +474,61 @@ mod tests {
         assert_eq!(frame.char_at(2, 2), Some('c'));
         assert_eq!(frame.char_at(3, 2), Some('d'));
         assert_eq!(frame.char_at(2, 3), Some(' '));
+    }
+
+    #[test]
+    fn block_renders_unicode_borders() {
+        let mut frame = Frame::new(8, 4);
+        let block = Block::new();
+
+        block.render(&mut frame, Rect::new(0, 0, 8, 4));
+
+        assert_eq!(frame.char_at(0, 0), Some('┌'));
+        assert_eq!(frame.char_at(7, 0), Some('┐'));
+        assert_eq!(frame.char_at(0, 3), Some('└'));
+        assert_eq!(frame.char_at(7, 3), Some('┘'));
+        assert_eq!(frame.char_at(3, 0), Some('─'));
+        assert_eq!(frame.char_at(0, 1), Some('│'));
+        assert_eq!(frame.char_at(7, 2), Some('│'));
+    }
+
+    #[test]
+    fn block_title_is_truncated_to_inner_width() {
+        let mut frame = Frame::new(7, 3);
+        let block = Block::new().title("abcdef");
+
+        block.render(&mut frame, Rect::new(0, 0, 7, 3));
+
+        assert_eq!(frame.char_at(1, 0), Some(' '));
+        assert_eq!(frame.char_at(2, 0), Some('a'));
+        assert_eq!(frame.char_at(3, 0), Some('b'));
+        assert_eq!(frame.char_at(4, 0), Some('c'));
+        assert_eq!(frame.char_at(5, 0), Some('d'));
+    }
+
+    #[test]
+    fn list_scrolls_to_keep_selected_visible() {
+        let mut frame = Frame::new(12, 3);
+        let items = ["zero", "one", "two", "three", "four", "five"];
+        let list = List::new(items).selected(4);
+
+        list.render(&mut frame, Rect::new(0, 0, 12, 3));
+
+        assert_eq!(frame.char_at(2, 0), Some('t'));
+        assert_eq!(frame.char_at(2, 1), Some('t'));
+        assert_eq!(frame.char_at(0, 2), Some('›'));
+        assert_eq!(frame.char_at(2, 2), Some('f'));
+    }
+
+    #[test]
+    fn list_empty_is_noop() {
+        let mut frame = Frame::new(4, 2);
+        List::new(Vec::<String>::new()).render(&mut frame, Rect::new(0, 0, 4, 2));
+
+        for y in 0..frame.height() {
+            for x in 0..frame.width() {
+                assert_eq!(frame.char_at(x, y), Some(' '));
+            }
+        }
     }
 }

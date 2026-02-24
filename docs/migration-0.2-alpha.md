@@ -36,3 +36,8 @@ Start layout-heavy screens with:
 - `Text`
 
 Then replace `Text` blocks with higher-level widgets as they are introduced.
+
+`0.2.0-alpha.1` also includes first baseline widgets:
+
+- `Block` for titled bordered containers
+- `List` for selectable, scrollable item views
