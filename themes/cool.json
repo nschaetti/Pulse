@@ -1,0 +1,21 @@
+{
+  "tokens": {
+    "settings.title.bg": { "fg": { "rgb": [210, 245, 220] }, "bg": { "rgb": [18, 68, 38] } },
+    "settings.title.main": { "fg": { "rgb": [232, 255, 240] } },
+    "settings.title.sub": { "fg": { "ansi": 120 } },
+
+    "settings.categories.bg": { "fg": { "ansi": 194 }, "bg": { "rgb": [12, 52, 29] } },
+    "settings.categories.title": { "fg": { "rgb": [180, 255, 205] } },
+
+    "settings.details.bg": { "fg": { "ansi": 159 }, "bg": { "rgb": [7, 46, 52] } },
+    "settings.details.title": { "fg": { "rgb": [150, 245, 255] } },
+    "settings.details.section": { "fg": { "rgb": [220, 255, 255] } },
+    "settings.details.text": { "fg": { "ansi": 159 } },
+
+    "settings.footer.bg": { "fg": { "ansi": 151 }, "bg": { "rgb": [10, 35, 22] } },
+    "settings.footer.text": { "fg": { "ansi": 151 } },
+
+    "list.item": { "fg": { "ansi": 194 }, "bg": { "rgb": [12, 52, 29] } },
+    "list.selected": { "fg": { "ansi": 16 }, "bg": { "rgb": [96, 220, 156] }, "modifiers": ["bold"] }
+  }
+}

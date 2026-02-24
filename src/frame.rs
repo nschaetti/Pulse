@@ -1,13 +1,17 @@
-use crate::Rect;
+use crate::{Rect, Style};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Cell {
     pub ch: char,
+    pub style: Style,
 }
 
 impl Default for Cell {
     fn default() -> Self {
-        Self { ch: ' ' }
+        Self {
+            ch: ' ',
+            style: Style::default(),
+        }
     }
 }
 
@@ -37,10 +41,15 @@ impl Frame {
     pub fn clear(&mut self) {
         for cell in &mut self.cells {
             cell.ch = ' ';
+            cell.style = Style::default();
         }
     }
 
     pub fn print(&mut self, x: u16, y: u16, text: &str) {
+        self.print_styled(x, y, text, Style::default());
+    }
+
+    pub fn print_styled(&mut self, x: u16, y: u16, text: &str, style: Style) {
         if self.width == 0 || self.height == 0 {
             return;
         }
@@ -79,6 +88,7 @@ impl Frame {
 
             let idx = self.index(px as u16, global_y as u16);
             self.cells[idx].ch = ch;
+            self.cells[idx].style = style;
         }
     }
 
@@ -121,6 +131,14 @@ impl Frame {
         }
 
         Some(self.cells[self.index(x, y)].ch)
+    }
+
+    pub fn style_at(&self, x: u16, y: u16) -> Option<Style> {
+        if x >= self.width || y >= self.height {
+            return None;
+        }
+
+        Some(self.cells[self.index(x, y)].style)
     }
 
     pub(crate) fn cells(&self) -> &[Cell] {
@@ -177,7 +195,7 @@ fn intersect_rects(a: Rect, b: Rect) -> Rect {
 #[cfg(test)]
 mod tests {
     use super::Frame;
-    use crate::Rect;
+    use crate::{Color, Modifier, Rect, Style};
 
     #[test]
     fn print_stops_at_frame_right_edge() {
@@ -246,5 +264,33 @@ mod tests {
 
         assert_eq!(frame.char_at(3, 0), Some('x'));
         assert_eq!(frame.char_at(0, 0), Some('y'));
+    }
+
+    #[test]
+    fn print_styled_writes_style_for_visible_cells() {
+        let mut frame = Frame::new(6, 2);
+        let style = Style::new()
+            .fg(Color::Ansi(33))
+            .bg(Color::Rgb(10, 20, 30))
+            .modifier(Modifier::Bold);
+
+        frame.print_styled(1, 0, "abc", style);
+
+        assert_eq!(frame.style_at(1, 0), Some(style));
+        assert_eq!(frame.style_at(2, 0), Some(style));
+        assert_eq!(frame.style_at(3, 0), Some(style));
+        assert_eq!(frame.style_at(0, 0), Some(Style::default()));
+    }
+
+    #[test]
+    fn print_styled_clips_without_touching_outside_style() {
+        let mut frame = Frame::new(4, 1);
+        let style = Style::new().fg(Color::Ansi(2));
+
+        frame.print_styled(3, 0, "zz", style);
+
+        assert_eq!(frame.char_at(3, 0), Some('z'));
+        assert_eq!(frame.style_at(3, 0), Some(style));
+        assert_eq!(frame.style_at(2, 0), Some(Style::default()));
     }
 }

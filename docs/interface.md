@@ -55,6 +55,18 @@ It is useful for:
 - Selected entry is kept visible in the viewport.
 - Rendering is clipped to the provided area.
 
+## Inline widget styling
+
+`Text`, `Block`, and `List` support inline styling and spacing.
+
+- `Text`: `.style(...)`, `.padding(...)`, `.margin(...)`
+- `Block`: `.style(...)`, `.border_style(...)`, `.title_style(...)`, `.body_style(...)`, `.padding(...)`, `.margin(...)`, `.border_type(...)`, `.borders(...)`
+- `List`: `.style(...)`, `.item_style(...)`, `.selected_style(...)`, `.selected_prefix(...)`, `.padding(...)`, `.margin(...)`
+
+For panel-style UIs without borders, set `Block::borders(Borders::none())` and use `body_style` for background color.
+
+For externalized styles, pair widgets with theme token lookups from `Theme` (see `docs/styling.md`).
+
 ## Reference Example
 
 See `examples/interface_layout.rs` for a complete partitioned interface shell.

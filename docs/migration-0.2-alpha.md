@@ -41,3 +41,9 @@ Then replace `Text` blocks with higher-level widgets as they are introduced.
 
 - `Block` for titled bordered containers
 - `List` for selectable, scrollable item views
+
+## External themes
+
+You can now load strict JSON themes with `Theme::from_file(...)` and resolve token styles with `theme.style("token")`.
+
+Malformed tokens fail parsing to avoid silent styling regressions.

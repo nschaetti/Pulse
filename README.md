@@ -79,6 +79,7 @@ cargo run --example emit
 cargo run --example events
 cargo run --example composition
 cargo run --example interface_layout
+cargo run --example styled_text
 cargo run --example admin_console
 cargo run --example settings
 cargo run --example log_explorer
@@ -93,6 +94,8 @@ cargo run --example resize
 - `App`: application contract with `init`, `update`, and `view`
 - `Command`: post-update action (`none`, `emit`, `batch`, `quit` helpers)
 - `Event`: runtime event type (`Key`, `Resize`, `Tick`)
+- `Style`: text style with ANSI256/RGB colors and modifiers
+- `Theme`: strict JSON token map for external styling
 - `run_with_events`: preferred event-driven runtime with configurable tick rate
 - `run`: compatibility runtime using a key mapper
 - `Frame`: char buffer with clipping and scoped rendering (`render_in`)
@@ -102,11 +105,29 @@ cargo run --example resize
 - `Block` + `List`: baseline widgets for framed sections and scrollable selection
 - `Component` and `update_child`: parent/child composition with lifted messages
 
+Inline styling quick sample:
+
+```rust
+use pulse::{Block, Color, List, Padding, Style};
+
+let panel = Block::new()
+    .title("Navigation")
+    .style(Style::new().bg(Color::Rgb(20, 28, 52)))
+    .border_style(Style::new().fg(Color::Ansi(39)))
+    .padding(Padding::all(1));
+
+let list = List::new(["Overview", "Metrics", "Logs"])
+    .selected(1)
+    .item_style(Style::new().fg(Color::Ansi(252)))
+    .selected_style(Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)));
+```
+
 ## Guides
 
 - Architecture: `docs/architecture.md`
 - Interface partitioning: `docs/interface.md`
 - Parent/child composition: `docs/composition.md`
+- Styling guide: `docs/styling.md`
 - Migration notes: `docs/migration-0.2-alpha.md`
 - Performance baseline: `docs/perf.md`
 

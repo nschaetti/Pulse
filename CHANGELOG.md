@@ -15,6 +15,8 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - Interface partition tree API with `LayoutNode`, `Slot`, `Constraint` (`Fixed`, `Percent`, `Fill`), and `ResolvedLayout`.
 - Layout primitives `Padding` and `Text` for interface scaffolding.
 - Baseline widgets `Block` (Unicode box drawing with titles) and `List` (selectable with basic scrolling).
+- Core style system with ANSI256/RGB colors, text modifiers, and styled frame rendering.
+- Strict JSON theme loader with token-based style lookup (`Theme`).
 - New examples: event runtime (`examples/events.rs`), component composition (`examples/composition.rs`), and interface shell (`examples/interface_layout.rs`).
 - Criterion benchmark suites for frame, layout, and command paths (`benches/*.rs`).
 - Report-only performance baseline documentation (`docs/perf.md`).
@@ -24,6 +26,8 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - Runtime command processing now supports deterministic FIFO scheduling for `Emit` and nested `Batch` commands.
 - README now documents the event-first flow and links to focused guides.
+- `Text`, `Block`, and `List` now support inline style and spacing configuration for widget-level composition.
+- `examples/settings.rs` now loads external theme files from `themes/*.json` and switches themes at runtime.
 
 ### Notes
 
