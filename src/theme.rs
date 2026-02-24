@@ -92,20 +92,38 @@ impl StyleSpec {
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 enum ColorSpec {
-    Default { default: bool },
-    Ansi { ansi: u8 },
-    Rgb { rgb: [u8; 3] },
+    Default(DefaultColorSpec),
+    Ansi(AnsiColorSpec),
+    Rgb(RgbColorSpec),
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct DefaultColorSpec {
+    default: bool,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AnsiColorSpec {
+    ansi: u8,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RgbColorSpec {
+    rgb: [u8; 3],
 }
 
 impl ColorSpec {
     fn into_color(self) -> Result<Color, ThemeError> {
         match self {
-            ColorSpec::Default { default: true } => Ok(Color::Default),
-            ColorSpec::Default { default: false } => Err(ThemeError::Invalid(
+            ColorSpec::Default(DefaultColorSpec { default: true }) => Ok(Color::Default),
+            ColorSpec::Default(DefaultColorSpec { default: false }) => Err(ThemeError::Invalid(
                 "`default` color must be true".to_string(),
             )),
-            ColorSpec::Ansi { ansi } => Ok(Color::Ansi(ansi)),
-            ColorSpec::Rgb { rgb } => Ok(Color::Rgb(rgb[0], rgb[1], rgb[2])),
+            ColorSpec::Ansi(AnsiColorSpec { ansi }) => Ok(Color::Ansi(ansi)),
+            ColorSpec::Rgb(RgbColorSpec { rgb }) => Ok(Color::Rgb(rgb[0], rgb[1], rgb[2])),
         }
     }
 }
@@ -194,5 +212,50 @@ mod tests {
         "#;
 
         assert!(Theme::from_json_str(input).is_err());
+    }
+
+    #[test]
+    fn missing_tokens_field_fails_strictly() {
+        let input = r#"{ "palette": {} }"#;
+        assert!(Theme::from_json_str(input).is_err());
+    }
+
+    #[test]
+    fn unknown_style_field_fails_strictly() {
+        let input = r#"
+        {
+          "tokens": {
+            "x": { "fg": { "ansi": 2 }, "unknown": 1 }
+          }
+        }
+        "#;
+
+        assert!(Theme::from_json_str(input).is_err());
+    }
+
+    #[test]
+    fn mixed_color_shape_fails_strictly() {
+        let input = r#"
+        {
+          "tokens": {
+            "x": { "fg": { "ansi": 2, "rgb": [1, 2, 3] } }
+          }
+        }
+        "#;
+
+        assert!(Theme::from_json_str(input).is_err());
+    }
+
+    #[test]
+    fn missing_token_uses_fallback_at_call_site() {
+        let input = r#"{ "tokens": {} }"#;
+        let theme = Theme::from_json_str(input).expect("theme should parse");
+        let fallback = Color::Ansi(99);
+
+        let resolved = theme
+            .style("statusbar.bg")
+            .and_then(|s| s.fg)
+            .unwrap_or(fallback);
+        assert_eq!(resolved, fallback);
     }
 }

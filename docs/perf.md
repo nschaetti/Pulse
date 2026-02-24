@@ -36,3 +36,15 @@ Use a report-only workflow with median-focused comparisons:
 - Benchmarks do not fail CI right now.
 - Results are used for trend tracking and regression visibility.
 - When changing rendering or layout internals, run benchmarks locally and compare medians.
+
+## Release Quality Gate
+
+Before cutting an alpha release, run:
+
+```bash
+cargo fmt -- --check
+cargo clippy --all-targets -- -D warnings
+cargo test
+cargo check --examples
+cargo bench --no-run
+```

@@ -1316,6 +1316,18 @@ mod tests {
     }
 
     #[test]
+    fn statusbar_handles_collision_with_truncation() {
+        let mut frame = Frame::new(8, 1);
+        StatusBar::new()
+            .left("left-side")
+            .right("right-side")
+            .render(&mut frame, Rect::new(0, 0, 8, 1));
+
+        assert_eq!(frame.char_at(0, 0), Some('l'));
+        assert_eq!(frame.char_at(7, 0), Some('d'));
+    }
+
+    #[test]
     fn apply_input_edit_updates_value_and_cursor() {
         let mut value = String::from("ab");
         let mut cursor = 2;
@@ -1339,5 +1351,32 @@ mod tests {
 
         assert_eq!(frame.char_at(0, 0), Some('s'));
         assert_eq!(frame.style_at(0, 0), Some(style));
+    }
+
+    #[test]
+    fn input_width_one_and_cursor_bounds_are_safe() {
+        let mut frame = Frame::new(1, 1);
+        Input::new()
+            .value("abc")
+            .cursor(99)
+            .focused(true)
+            .render(&mut frame, Rect::new(0, 0, 1, 1));
+
+        assert_eq!(frame.char_at(0, 0), Some('a'));
+    }
+
+    #[test]
+    fn paragraph_char_and_no_wrap_modes_render_differently() {
+        let mut frame = Frame::new(5, 2);
+        Paragraph::new("abcdef")
+            .wrap(WrapMode::Char)
+            .render(&mut frame, Rect::new(0, 0, 3, 2));
+        assert_eq!(frame.char_at(0, 1), Some('d'));
+
+        let mut frame2 = Frame::new(5, 2);
+        Paragraph::new("abcdef")
+            .wrap(WrapMode::NoWrap)
+            .render(&mut frame2, Rect::new(0, 0, 3, 2));
+        assert_eq!(frame2.char_at(0, 1), Some(' '));
     }
 }
