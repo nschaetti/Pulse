@@ -1,0 +1,14 @@
+[package]
+name = "pulse"
+version = "0.1.0-alpha.1"
+edition = "2021"
+rust-version = "1.74"
+description = "Minimal Elm-inspired terminal UI runtime for Rust"
+license = "GPL-3.0-only"
+repository = "https://github.com/nschaetti/Pulse"
+readme = "README.md"
+keywords = ["tui", "terminal", "elm", "ui"]
+categories = ["command-line-interface"]
+
+[dependencies]
+crossterm = "0.28"

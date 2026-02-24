@@ -36,3 +36,45 @@ impl Rect {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Rect;
+
+    #[test]
+    fn split_vertical_clamps_to_height() {
+        let root = Rect::new(2, 3, 10, 4);
+        let (top, bottom) = root.split_vertical(999);
+
+        assert_eq!(top, Rect::new(2, 3, 10, 4));
+        assert_eq!(bottom, Rect::new(2, 7, 10, 0));
+    }
+
+    #[test]
+    fn split_vertical_handles_zero() {
+        let root = Rect::new(0, 0, 8, 5);
+        let (top, bottom) = root.split_vertical(0);
+
+        assert_eq!(top, Rect::new(0, 0, 8, 0));
+        assert_eq!(bottom, Rect::new(0, 0, 8, 5));
+    }
+
+    #[test]
+    fn split_horizontal_clamps_to_width() {
+        let root = Rect::new(1, 4, 6, 3);
+        let (left, right) = root.split_horizontal(100);
+
+        assert_eq!(left, Rect::new(1, 4, 6, 3));
+        assert_eq!(right, Rect::new(7, 4, 0, 3));
+    }
+
+    #[test]
+    fn split_horizontal_preserves_total_width() {
+        let root = Rect::new(0, 1, 9, 2);
+        let (left, right) = root.split_horizontal(4);
+
+        assert_eq!(left, Rect::new(0, 1, 4, 2));
+        assert_eq!(right, Rect::new(4, 1, 5, 2));
+        assert_eq!(left.width + right.width, root.width);
+    }
+}

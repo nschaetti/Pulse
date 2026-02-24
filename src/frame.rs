@@ -173,3 +173,78 @@ fn intersect_rects(a: Rect, b: Rect) -> Rect {
         (bottom - top) as u16,
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Frame;
+    use crate::Rect;
+
+    #[test]
+    fn print_stops_at_frame_right_edge() {
+        let mut frame = Frame::new(5, 1);
+        frame.print(3, 0, "abcd");
+
+        assert_eq!(frame.char_at(0, 0), Some(' '));
+        assert_eq!(frame.char_at(1, 0), Some(' '));
+        assert_eq!(frame.char_at(2, 0), Some(' '));
+        assert_eq!(frame.char_at(3, 0), Some('a'));
+        assert_eq!(frame.char_at(4, 0), Some('b'));
+    }
+
+    #[test]
+    fn print_out_of_bounds_is_ignored() {
+        let mut frame = Frame::new(4, 2);
+        frame.print(20, 0, "x");
+        frame.print(0, 20, "y");
+
+        for y in 0..frame.height() {
+            for x in 0..frame.width() {
+                assert_eq!(frame.char_at(x, y), Some(' '));
+            }
+        }
+    }
+
+    #[test]
+    fn render_in_clips_to_area() {
+        let mut frame = Frame::new(8, 3);
+        frame.render_in(Rect::new(2, 1, 3, 1), |f| {
+            f.print(0, 0, "hello");
+            f.print(0, 1, "ignored");
+        });
+
+        assert_eq!(frame.char_at(2, 1), Some('h'));
+        assert_eq!(frame.char_at(3, 1), Some('e'));
+        assert_eq!(frame.char_at(4, 1), Some('l'));
+        assert_eq!(frame.char_at(5, 1), Some(' '));
+        assert_eq!(frame.char_at(2, 2), Some(' '));
+    }
+
+    #[test]
+    fn render_in_nested_areas_intersect_correctly() {
+        let mut frame = Frame::new(8, 4);
+
+        frame.render_in(Rect::new(1, 1, 5, 2), |f| {
+            f.render_in(Rect::new(2, 0, 2, 1), |f| {
+                f.print(0, 0, "abcd");
+            });
+        });
+
+        assert_eq!(frame.char_at(3, 1), Some('a'));
+        assert_eq!(frame.char_at(4, 1), Some('b'));
+        assert_eq!(frame.char_at(5, 1), Some(' '));
+    }
+
+    #[test]
+    fn render_in_restores_origin_after_closure() {
+        let mut frame = Frame::new(6, 2);
+
+        frame.render_in(Rect::new(3, 0, 2, 1), |f| {
+            f.print(0, 0, "x");
+        });
+
+        frame.print(0, 0, "y");
+
+        assert_eq!(frame.char_at(3, 0), Some('x'));
+        assert_eq!(frame.char_at(0, 0), Some('y'));
+    }
+}

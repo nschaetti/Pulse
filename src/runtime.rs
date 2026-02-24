@@ -90,3 +90,67 @@ impl Drop for TerminalGuard {
         let _ = terminal::disable_raw_mode();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{App, Command, Frame};
+
+    use super::process_message;
+
+    #[derive(Debug, Clone, Copy, Eq, PartialEq)]
+    enum Msg {
+        Start,
+        StepA,
+        StepB,
+        Quit,
+    }
+
+    struct TestApp {
+        updates: Vec<Msg>,
+    }
+
+    impl TestApp {
+        fn new() -> Self {
+            Self {
+                updates: Vec::new(),
+            }
+        }
+    }
+
+    impl App for TestApp {
+        type Msg = Msg;
+
+        fn update(&mut self, msg: Self::Msg) -> Command<Self::Msg> {
+            self.updates.push(msg);
+
+            match msg {
+                Msg::Start => Command::Emit(Msg::StepA),
+                Msg::StepA => Command::Emit(Msg::StepB),
+                Msg::StepB => Command::None,
+                Msg::Quit => Command::Quit,
+            }
+        }
+
+        fn view(&self, _frame: &mut Frame) {}
+    }
+
+    #[test]
+    fn process_message_runs_emit_chain_in_order() {
+        let mut app = TestApp::new();
+
+        let should_quit = process_message(&mut app, Msg::Start);
+
+        assert!(!should_quit);
+        assert_eq!(app.updates, vec![Msg::Start, Msg::StepA, Msg::StepB]);
+    }
+
+    #[test]
+    fn process_message_returns_true_on_quit() {
+        let mut app = TestApp::new();
+
+        let should_quit = process_message(&mut app, Msg::Quit);
+
+        assert!(should_quit);
+        assert_eq!(app.updates, vec![Msg::Quit]);
+    }
+}
