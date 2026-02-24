@@ -38,9 +38,9 @@ impl App for Counter {
         match msg {
             Msg::Increment => {
                 self.value += 1;
-                Command::None
+                Command::none()
             }
-            Msg::Quit => Command::Quit,
+            Msg::Quit => Command::quit(),
         }
     }
 
@@ -75,6 +75,8 @@ fn main() -> std::io::Result<()> {
 cargo run --example counter
 cargo run --example keymap
 cargo run --example emit
+cargo run --example events
+cargo run --example composition
 cargo run --example layout_demo
 cargo run --example clipping
 cargo run --example diff
@@ -84,10 +86,13 @@ cargo run --example resize
 ## Core API
 
 - `App`: application contract with `init`, `update`, and `view`
-- `Command`: post-update action (`None`, `Emit`, `Quit`)
-- `run`: runtime loop handling key events, resize, and rendering
+- `Command`: post-update action (`none`, `emit`, `batch`, `quit` helpers)
+- `Event`: runtime event type (`Key`, `Resize`, `Tick`)
+- `run`: compatibility runtime using a key mapper
+- `run_with_events`: event-driven runtime with configurable tick rate
 - `Frame`: char buffer with clipping and scoped rendering (`render_in`)
 - `Rect`: basic layout primitive with horizontal/vertical splits
+- `Component` and `update_child`: parent/child composition with lifted messages
 
 ## Development checks
 

@@ -20,18 +20,18 @@ impl App for KeymapApp {
         match msg {
             Msg::Plus => {
                 self.last_msg = "Plus";
-                Command::None
+                Command::none()
             }
             Msg::Minus => {
                 self.last_msg = "Minus";
-                Command::None
+                Command::none()
             }
-            Msg::Quit => Command::Quit,
+            Msg::Quit => Command::quit(),
             Msg::Unknown(ch) => {
                 self.last_msg = "Unknown";
                 self.last_key.clear();
                 self.last_key.push(ch);
-                Command::None
+                Command::none()
             }
         }
     }

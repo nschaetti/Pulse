@@ -28,9 +28,9 @@ impl App for DiffApp {
                     self.x = 120;
                     self.dx = -1;
                 }
-                Command::None
+                Command::none()
             }
-            Msg::Quit => Command::Quit,
+            Msg::Quit => Command::quit(),
         }
     }
 

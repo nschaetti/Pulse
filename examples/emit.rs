@@ -20,16 +20,16 @@ impl App for EmitApp {
         self.updates = self.updates.saturating_add(1);
 
         match msg {
-            Msg::StartChain => Command::Emit(Msg::AddOne),
+            Msg::StartChain => Command::emit(Msg::AddOne),
             Msg::AddOne => {
                 self.value += 1;
-                Command::Emit(Msg::AddTen)
+                Command::emit(Msg::AddTen)
             }
             Msg::AddTen => {
                 self.value += 10;
-                Command::None
+                Command::none()
             }
-            Msg::Quit => Command::Quit,
+            Msg::Quit => Command::quit(),
         }
     }
 

@@ -16,7 +16,7 @@ impl App for ResizeApp {
 
     fn update(&mut self, msg: Self::Msg) -> Command<Self::Msg> {
         match msg {
-            Msg::Quit => Command::Quit,
+            Msg::Quit => Command::quit(),
         }
     }
 

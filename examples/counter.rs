@@ -18,13 +18,13 @@ impl App for Counter {
         match msg {
             Msg::Increment => {
                 self.value += 1;
-                Command::None
+                Command::none()
             }
             Msg::Decrement => {
                 self.value -= 1;
-                Command::None
+                Command::none()
             }
-            Msg::Quit => Command::Quit,
+            Msg::Quit => Command::quit(),
         }
     }
 
