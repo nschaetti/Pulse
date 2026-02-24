@@ -77,6 +77,7 @@ cargo run --example keymap
 cargo run --example emit
 cargo run --example events
 cargo run --example composition
+cargo run --example interface_layout
 cargo run --example layout_demo
 cargo run --example clipping
 cargo run --example diff
@@ -92,6 +93,8 @@ cargo run --example resize
 - `run_with_events`: event-driven runtime with configurable tick rate
 - `Frame`: char buffer with clipping and scoped rendering (`render_in`)
 - `Rect`: basic layout primitive with horizontal/vertical splits
+- `LayoutNode` + `Constraint` (`Fixed`, `Percent`, `Fill`): partition trees for screen structure
+- `Padding` + `Text`: simple primitives to visualize and populate resolved zones
 - `Component` and `update_child`: parent/child composition with lifted messages
 
 ## Development checks
