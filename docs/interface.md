@@ -55,6 +55,15 @@ It is useful for:
 - Selected entry is kept visible in the viewport.
 - Rendering is clipped to the provided area.
 
+`Paragraph` wraps longer text blocks for content panes.
+
+- Wrap modes: `Word`, `Char`, `NoWrap`
+- Uses the same style/padding/margin pattern as `Text`
+
+`StatusBar` renders one-line left/right segments with optional split styles.
+
+`Input` provides a basic editable field with cursor and placeholder rendering.
+
 ## Inline widget styling
 
 `Text`, `Block`, and `List` support inline styling and spacing.

@@ -105,6 +105,7 @@ Theme-driven examples (`settings`, `admin_console`, `log_explorer`, `interface_l
 - `LayoutNode` + `Constraint` (`Fixed`, `Percent`, `Fill`): partition trees for screen structure
 - `Padding` + `Text`: simple primitives to visualize and populate resolved zones
 - `Block` + `List`: baseline widgets for framed sections and scrollable selection
+- `Paragraph` + `StatusBar` + `Input`: higher-level text, status, and editing widgets
 - `Component` and `update_child`: parent/child composition with lifted messages
 
 Inline styling quick sample:

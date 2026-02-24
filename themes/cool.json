@@ -25,7 +25,19 @@
 
     "text.primary": { "fg": { "ansi": 194 } },
     "text.muted": { "fg": { "ansi": 159 } },
+    "paragraph.default": { "fg": { "ansi": 194 } },
+    "paragraph.muted": { "fg": { "ansi": 159 } },
     "log.line": { "fg": { "ansi": 194 } },
+
+    "statusbar.bg": { "bg": { "rgb": [10, 35, 22] } },
+    "statusbar.left": { "fg": { "ansi": 151 } },
+    "statusbar.right": { "fg": { "ansi": 151 } },
+
+    "input.bg": { "bg": { "rgb": [10, 46, 28] } },
+    "input.text": { "fg": { "ansi": 194 } },
+    "input.placeholder": { "fg": { "ansi": 72 } },
+    "input.cursor": { "fg": { "ansi": 16 }, "bg": { "ansi": 121 } },
+    "input.focus": { "bg": { "rgb": [14, 62, 36] } },
 
     "list.item": { "fg": { "ansi": 194 }, "bg": { "rgb": [12, 52, 29] } },
     "list.selected": { "fg": { "ansi": 16 }, "bg": { "rgb": [96, 220, 156] }, "modifiers": ["bold"] }

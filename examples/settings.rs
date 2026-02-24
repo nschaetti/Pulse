@@ -2,8 +2,8 @@ use std::io;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use pulse::{
-    run, App, Color, Command, Constraint, Direction, Frame, LayoutNode, List, Padding, Rect, Slot,
-    Style, Text, Theme,
+    apply_input_edit, run, App, Color, Command, Constraint, Direction, Frame, Input, InputEdit,
+    LayoutNode, List, Padding, Rect, Slot, Style, Text, Theme,
 };
 
 const CATEGORIES: [&str; 8] = [
@@ -32,6 +32,11 @@ struct Palette {
     footer_text: Style,
     list_item: Style,
     list_selected: Style,
+    input_bg: Style,
+    input_text: Style,
+    input_placeholder: Style,
+    input_cursor: Style,
+    input_focus: Style,
 }
 
 impl Palette {
@@ -102,6 +107,23 @@ impl Palette {
                     .fg(Color::Ansi(15))
                     .bg(Color::Rgb(72, 114, 186)),
             ),
+            input_bg: style_from(theme, "input.bg", Style::new().bg(Color::Rgb(18, 26, 48))),
+            input_text: style_from(theme, "input.text", Style::new().fg(Color::Ansi(252))),
+            input_placeholder: style_from(
+                theme,
+                "input.placeholder",
+                Style::new().fg(Color::Ansi(244)),
+            ),
+            input_cursor: style_from(
+                theme,
+                "input.cursor",
+                Style::new().bg(Color::Ansi(39)).fg(Color::Ansi(16)),
+            ),
+            input_focus: style_from(
+                theme,
+                "input.focus",
+                Style::new().bg(Color::Rgb(28, 38, 68)),
+            ),
         }
     }
 }
@@ -113,6 +135,9 @@ fn style_from(theme: &Theme, token: &str, fallback: Style) -> Style {
 struct SettingsApp {
     layout: LayoutNode,
     selected: usize,
+    filter: String,
+    cursor: usize,
+    input_focused: bool,
     theme_idx: usize,
     themes: [Theme; 3],
 }
@@ -120,6 +145,8 @@ struct SettingsApp {
 enum Msg {
     Up,
     Down,
+    Edit(InputEdit),
+    ToggleInputFocus,
     Theme(usize),
     Quit,
 }
@@ -135,6 +162,16 @@ impl App for SettingsApp {
             }
             Msg::Down => {
                 self.selected = (self.selected + 1).min(CATEGORIES.len().saturating_sub(1));
+                Command::none()
+            }
+            Msg::Edit(edit) => {
+                if self.input_focused {
+                    apply_input_edit(&mut self.filter, &mut self.cursor, edit);
+                }
+                Command::none()
+            }
+            Msg::ToggleInputFocus => {
+                self.input_focused = !self.input_focused;
                 Command::none()
             }
             Msg::Theme(next) => {
@@ -193,7 +230,7 @@ impl App for SettingsApp {
                 .style(palette.details_title)
                 .margin(Padding::symmetric(0, 1))
                 .render(frame, area);
-            Text::new(format!("Section: {}", CATEGORIES[self.selected]))
+            Text::new("Filter")
                 .style(palette.details_section)
                 .margin(Padding {
                     top: 2,
@@ -202,10 +239,45 @@ impl App for SettingsApp {
                     left: 1,
                 })
                 .render(frame, area);
+            fill_area(
+                frame,
+                Rect::new(
+                    area.x.saturating_add(1),
+                    area.y.saturating_add(3),
+                    area.width.saturating_sub(2),
+                    1,
+                ),
+                palette.input_bg,
+            );
+            Input::new()
+                .value(self.filter.clone())
+                .cursor(self.cursor)
+                .placeholder("type to filter categories")
+                .focused(self.input_focused)
+                .style(palette.input_text)
+                .focus_style(palette.input_focus)
+                .placeholder_style(palette.input_placeholder)
+                .cursor_style(palette.input_cursor)
+                .margin(Padding {
+                    top: 3,
+                    right: 1,
+                    bottom: 0,
+                    left: 1,
+                })
+                .render(frame, area);
+            Text::new(format!("Section: {}", CATEGORIES[self.selected]))
+                .style(palette.details_section)
+                .margin(Padding {
+                    top: 5,
+                    right: 1,
+                    bottom: 0,
+                    left: 1,
+                })
+                .render(frame, area);
             Text::new("- Placeholder option A\n- Placeholder option B\n- Placeholder option C")
                 .style(palette.details_text)
                 .margin(Padding {
-                    top: 4,
+                    top: 7,
                     right: 1,
                     bottom: 0,
                     left: 1,
@@ -215,7 +287,7 @@ impl App for SettingsApp {
 
         if let Some(area) = zones.area("footer") {
             fill_area(frame, area, palette.footer_bg);
-            Text::new("up/down or j/k: select section | 1/2/3: theme | q: quit")
+            Text::new("up/down: section | /: focus filter | 1/2/3: theme | q: quit")
                 .style(palette.footer_text)
                 .margin(Padding::symmetric(0, 1))
                 .render(frame, area);
@@ -278,10 +350,19 @@ fn map_key(key: KeyEvent) -> Option<Msg> {
     match key.code {
         KeyCode::Up | KeyCode::Char('k') => Some(Msg::Up),
         KeyCode::Down | KeyCode::Char('j') => Some(Msg::Down),
+        KeyCode::Left => Some(Msg::Edit(InputEdit::Left)),
+        KeyCode::Right => Some(Msg::Edit(InputEdit::Right)),
+        KeyCode::Backspace => Some(Msg::Edit(InputEdit::Backspace)),
+        KeyCode::Home => Some(Msg::Edit(InputEdit::Home)),
+        KeyCode::End => Some(Msg::Edit(InputEdit::End)),
+        KeyCode::Char('/') => Some(Msg::ToggleInputFocus),
         KeyCode::Char('1') => Some(Msg::Theme(0)),
         KeyCode::Char('2') => Some(Msg::Theme(1)),
         KeyCode::Char('3') => Some(Msg::Theme(2)),
         KeyCode::Char('q') => Some(Msg::Quit),
+        KeyCode::Char(ch) if ch != 'q' && !ch.is_control() => {
+            Some(Msg::Edit(InputEdit::Insert(ch)))
+        }
         _ => None,
     }
 }
@@ -294,6 +375,9 @@ fn main() -> io::Result<()> {
     let mut app = SettingsApp {
         layout: build_layout(),
         selected: 0,
+        filter: String::new(),
+        cursor: 0,
+        input_focused: false,
         theme_idx: 0,
         themes: [
             load_theme("themes/default.json")?,

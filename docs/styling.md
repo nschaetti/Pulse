@@ -73,6 +73,8 @@ Current examples share these tokens:
 
 - `panel.body`, `panel.border`, `panel.title`
 - `list.item`, `list.selected`
-- `text.primary`, `text.muted`, `log.line`
+- `text.primary`, `text.muted`, `paragraph.default`, `paragraph.muted`, `log.line`
 - `app.header.text`, `app.footer.bg`, `app.footer.text`
+- `statusbar.bg`, `statusbar.left`, `statusbar.right`
+- `input.bg`, `input.text`, `input.placeholder`, `input.cursor`, `input.focus`
 - `settings.*` namespace for settings-specific panels

@@ -21,6 +21,6 @@ pub use runtime::run_with_events;
 pub use style::{Color, Modifier, ModifierSet, Style};
 pub use theme::{Theme, ThemeError};
 pub use ui::{
-    Block, BorderType, Borders, Constraint, Direction, LayoutNode, List, Padding, ResolvedLayout,
-    Slot, Text, Zone,
+    apply_input_edit, Block, BorderType, Borders, Constraint, Direction, Input, InputEdit,
+    LayoutNode, List, Padding, Paragraph, ResolvedLayout, Slot, StatusBar, Text, WrapMode, Zone,
 };
