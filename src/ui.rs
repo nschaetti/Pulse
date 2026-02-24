@@ -585,6 +585,207 @@ impl ListStyle {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SelectStyle {
+    pub base: Style,
+    pub selected: Style,
+    pub dropdown: Style,
+    pub highlight: Style,
+}
+
+impl SelectStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or(
+                "select.base",
+                Style::new().fg(Color::Ansi(252)).bg(Color::Rgb(18, 26, 48)),
+            ),
+            selected: theme.style_or(
+                "select.selected",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+            dropdown: theme.style_or(
+                "select.dropdown",
+                Style::new().fg(Color::Ansi(252)).bg(Color::Rgb(22, 32, 56)),
+            ),
+            highlight: theme.style_or(
+                "select.highlight",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CheckboxStyle {
+    pub base: Style,
+    pub checked: Style,
+    pub box_style: Style,
+    pub focus: Style,
+}
+
+impl CheckboxStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("checkbox.base", Style::new().fg(Color::Ansi(252))),
+            checked: theme.style_or(
+                "checkbox.checked",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+            box_style: theme.style_or("checkbox.box", Style::new().fg(Color::Ansi(39))),
+            focus: theme.style_or(
+                "checkbox.focus",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(45)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RadioGroupStyle {
+    pub base: Style,
+    pub selected: Style,
+    pub highlight: Style,
+    pub marker: Style,
+}
+
+impl RadioGroupStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("radio.base", Style::new().fg(Color::Ansi(252))),
+            selected: theme.style_or(
+                "radio.selected",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+            highlight: theme.style_or(
+                "radio.highlight",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(45)),
+            ),
+            marker: theme.style_or("radio.marker", Style::new().fg(Color::Ansi(39))),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SliderStyle {
+    pub base: Style,
+    pub track: Style,
+    pub fill: Style,
+    pub thumb: Style,
+    pub focus: Style,
+}
+
+impl SliderStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("slider.base", Style::new().fg(Color::Ansi(252))),
+            track: theme.style_or("slider.track", Style::new().fg(Color::Ansi(244))),
+            fill: theme.style_or("slider.fill", Style::new().fg(Color::Ansi(39))),
+            thumb: theme.style_or("slider.thumb", Style::new().fg(Color::Ansi(39))),
+            focus: theme.style_or(
+                "slider.focus",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(45)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SwitchStyle {
+    pub base: Style,
+    pub on: Style,
+    pub off: Style,
+    pub thumb: Style,
+    pub focus: Style,
+}
+
+impl SwitchStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("switch.base", Style::new().fg(Color::Ansi(252))),
+            on: theme.style_or(
+                "switch.on",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+            off: theme.style_or(
+                "switch.off",
+                Style::new().fg(Color::Ansi(252)).bg(Color::Ansi(238)),
+            ),
+            thumb: theme.style_or("switch.thumb", Style::new().fg(Color::Ansi(231))),
+            focus: theme.style_or(
+                "switch.focus",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(45)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct StepperStyle {
+    pub base: Style,
+    pub value: Style,
+    pub controls: Style,
+    pub focus: Style,
+}
+
+impl StepperStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("stepper.base", Style::new().fg(Color::Ansi(252))),
+            value: theme.style_or("stepper.value", Style::new().fg(Color::Ansi(252))),
+            controls: theme.style_or("stepper.controls", Style::new().fg(Color::Ansi(39))),
+            focus: theme.style_or(
+                "stepper.focus",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(45)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ProgressBarStyle {
+    pub base: Style,
+    pub track: Style,
+    pub fill: Style,
+    pub label: Style,
+}
+
+impl ProgressBarStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("progress.base", Style::new().fg(Color::Ansi(252))),
+            track: theme.style_or("progress.track", Style::new().fg(Color::Ansi(244))),
+            fill: theme.style_or("progress.fill", Style::new().fg(Color::Ansi(39))),
+            label: theme.style_or("progress.label", Style::new().fg(Color::Ansi(252))),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MultiSelectStyle {
+    pub base: Style,
+    pub selected: Style,
+    pub highlight: Style,
+    pub marker: Style,
+}
+
+impl MultiSelectStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("multiselect.base", Style::new().fg(Color::Ansi(252))),
+            selected: theme.style_or(
+                "multiselect.selected",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+            highlight: theme.style_or(
+                "multiselect.highlight",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(45)),
+            ),
+            marker: theme.style_or("multiselect.marker", Style::new().fg(Color::Ansi(39))),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct StatusBarStyle {
     pub base: Style,
     pub left: Style,
@@ -1365,6 +1566,1089 @@ impl Table {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Select {
+    options: Vec<String>,
+    selected: Option<usize>,
+    highlighted: usize,
+    expanded: bool,
+    placeholder: String,
+    max_visible: Option<usize>,
+    style: Style,
+    selected_style: Option<Style>,
+    dropdown_style: Option<Style>,
+    highlight_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl Select {
+    pub fn new<I, S>(options: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: Into<String>,
+    {
+        Self {
+            options: options.into_iter().map(Into::into).collect(),
+            selected: None,
+            highlighted: 0,
+            expanded: false,
+            placeholder: String::new(),
+            max_visible: None,
+            style: Style::default(),
+            selected_style: None,
+            dropdown_style: None,
+            highlight_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn selected(mut self, selected: usize) -> Self {
+        self.selected = Some(selected);
+        self
+    }
+
+    pub fn highlighted(mut self, highlighted: usize) -> Self {
+        self.highlighted = highlighted;
+        self
+    }
+
+    pub fn expanded(mut self, expanded: bool) -> Self {
+        self.expanded = expanded;
+        self
+    }
+
+    pub fn placeholder(mut self, placeholder: impl Into<String>) -> Self {
+        self.placeholder = placeholder.into();
+        self
+    }
+
+    pub fn max_visible(mut self, max_visible: usize) -> Self {
+        self.max_visible = Some(max_visible.max(1));
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn selected_style(mut self, style: Style) -> Self {
+        self.selected_style = Some(style);
+        self
+    }
+
+    pub fn dropdown_style(mut self, style: Style) -> Self {
+        self.dropdown_style = Some(style);
+        self
+    }
+
+    pub fn highlight_style(mut self, style: Style) -> Self {
+        self.highlight_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let selected_style = self.selected_style.unwrap_or(base_style);
+        let dropdown_style = self.dropdown_style.unwrap_or(base_style);
+        let highlight_style = self.highlight_style.unwrap_or(selected_style);
+
+        if self.options.is_empty() {
+            frame.render_in(area, |frame| {
+                let mut row = " ".repeat(width);
+                let value = truncate_to_width(&self.placeholder, width.saturating_sub(2));
+                replace_segment(&mut row, 0, &value);
+                if width > 0 {
+                    frame.print_styled(0, 0, &row, base_style);
+                    frame.print_styled((width - 1) as u16, 0, "▾", base_style);
+                }
+            });
+            return;
+        }
+
+        let selected_idx = self
+            .selected
+            .map(|idx| idx.min(self.options.len().saturating_sub(1)));
+        let highlighted = self.highlighted.min(self.options.len().saturating_sub(1));
+
+        frame.render_in(area, |frame| {
+            let mut row = " ".repeat(width);
+            let value = selected_idx
+                .and_then(|idx| self.options.get(idx))
+                .map(|item| item.as_str())
+                .filter(|item| !item.is_empty())
+                .unwrap_or(self.placeholder.as_str());
+            let value = truncate_to_width(value, width.saturating_sub(2));
+            replace_segment(&mut row, 0, &value);
+
+            frame.print_styled(0, 0, &row, base_style);
+            if !value.is_empty() {
+                frame.print_styled(
+                    0,
+                    0,
+                    &value,
+                    if selected_idx.is_some() {
+                        selected_style
+                    } else {
+                        base_style
+                    },
+                );
+            }
+            if width > 0 {
+                frame.print_styled(
+                    (width - 1) as u16,
+                    0,
+                    if self.expanded { "▴" } else { "▾" },
+                    base_style,
+                );
+            }
+
+            if !self.expanded || area.height <= 1 {
+                return;
+            }
+
+            let viewport = area.height.saturating_sub(1) as usize;
+            let max_visible = self.max_visible.unwrap_or(self.options.len());
+            let rows = viewport.min(max_visible.max(1));
+            let start = scroll_start(highlighted, rows, self.options.len());
+            let end = (start + rows).min(self.options.len());
+
+            for (row_idx, option_idx) in (start..end).enumerate() {
+                let y = (row_idx + 1) as u16;
+                let mut line = " ".repeat(width);
+                let pointer = if option_idx == highlighted {
+                    "›"
+                } else {
+                    " "
+                };
+                let marker = if Some(option_idx) == selected_idx {
+                    "●"
+                } else {
+                    " "
+                };
+                replace_segment(&mut line, 0, &format!("{pointer}{marker} "));
+                let label =
+                    truncate_to_width(self.options[option_idx].as_str(), width.saturating_sub(3));
+                replace_segment(&mut line, 3, &label);
+
+                let style = if option_idx == highlighted {
+                    highlight_style
+                } else if Some(option_idx) == selected_idx {
+                    selected_style
+                } else {
+                    dropdown_style
+                };
+
+                frame.print_styled(0, y, &line, style);
+            }
+        });
+    }
+}
+
+impl Default for Select {
+    fn default() -> Self {
+        Self::new(Vec::<String>::new())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Checkbox {
+    label: String,
+    checked: bool,
+    focused: bool,
+    style: Style,
+    checked_style: Option<Style>,
+    box_style: Option<Style>,
+    focus_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl Checkbox {
+    pub fn new(label: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            checked: false,
+            focused: false,
+            style: Style::default(),
+            checked_style: None,
+            box_style: None,
+            focus_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn checked(mut self, checked: bool) -> Self {
+        self.checked = checked;
+        self
+    }
+
+    pub fn focused(mut self, focused: bool) -> Self {
+        self.focused = focused;
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn checked_style(mut self, style: Style) -> Self {
+        self.checked_style = Some(style);
+        self
+    }
+
+    pub fn box_style(mut self, style: Style) -> Self {
+        self.box_style = Some(style);
+        self
+    }
+
+    pub fn focus_style(mut self, style: Style) -> Self {
+        self.focus_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let checked_style = self.checked_style.unwrap_or(base_style);
+        let box_style = self.box_style.unwrap_or(base_style);
+        let focus_style = self.focus_style.unwrap_or(base_style);
+
+        frame.render_in(area, |frame| {
+            let mut row = " ".repeat(width);
+            let marker = if self.checked { "[x]" } else { "[ ]" };
+            let content = format!("{marker} {}", self.label);
+            let clipped = truncate_to_width(&content, width);
+            replace_segment(&mut row, 0, &clipped);
+
+            frame.print_styled(0, 0, &row, base_style);
+            if self.focused {
+                frame.print_styled(0, 0, &row, focus_style);
+            }
+
+            let marker_chars = marker.chars().count().min(width);
+            if marker_chars > 0 {
+                frame.print_styled(0, 0, &truncate_to_width(marker, marker_chars), box_style);
+            }
+
+            if self.checked {
+                frame.print_styled(1, 0, "x", checked_style);
+            }
+        });
+    }
+}
+
+impl Default for Checkbox {
+    fn default() -> Self {
+        Self::new("")
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RadioGroup {
+    options: Vec<String>,
+    selected: Option<usize>,
+    highlighted: usize,
+    focused: bool,
+    max_visible: Option<usize>,
+    style: Style,
+    selected_style: Option<Style>,
+    highlight_style: Option<Style>,
+    marker_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl RadioGroup {
+    pub fn new<I, S>(options: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: Into<String>,
+    {
+        Self {
+            options: options.into_iter().map(Into::into).collect(),
+            selected: None,
+            highlighted: 0,
+            focused: false,
+            max_visible: None,
+            style: Style::default(),
+            selected_style: None,
+            highlight_style: None,
+            marker_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn selected(mut self, selected: usize) -> Self {
+        self.selected = Some(selected);
+        self
+    }
+
+    pub fn highlighted(mut self, highlighted: usize) -> Self {
+        self.highlighted = highlighted;
+        self
+    }
+
+    pub fn focused(mut self, focused: bool) -> Self {
+        self.focused = focused;
+        self
+    }
+
+    pub fn max_visible(mut self, max_visible: usize) -> Self {
+        self.max_visible = Some(max_visible.max(1));
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn selected_style(mut self, style: Style) -> Self {
+        self.selected_style = Some(style);
+        self
+    }
+
+    pub fn highlight_style(mut self, style: Style) -> Self {
+        self.highlight_style = Some(style);
+        self
+    }
+
+    pub fn marker_style(mut self, style: Style) -> Self {
+        self.marker_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 || self.options.is_empty() {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let selected_style = self.selected_style.unwrap_or(base_style);
+        let highlight_style = self.highlight_style.unwrap_or(selected_style);
+        let marker_style = self.marker_style.unwrap_or(base_style);
+
+        let selected_idx = self
+            .selected
+            .map(|idx| idx.min(self.options.len().saturating_sub(1)));
+        let highlighted = self.highlighted.min(self.options.len().saturating_sub(1));
+
+        let viewport = area.height as usize;
+        let max_visible = self.max_visible.unwrap_or(self.options.len());
+        let rows = viewport.min(max_visible.max(1));
+        let start = scroll_start(highlighted, rows, self.options.len());
+        let end = (start + rows).min(self.options.len());
+
+        frame.render_in(area, |frame| {
+            for (row_idx, option_idx) in (start..end).enumerate() {
+                let y = row_idx as u16;
+                let mut line = " ".repeat(width);
+                let is_highlight = self.focused && option_idx == highlighted;
+                let pointer = if is_highlight { "›" } else { " " };
+                let marker = if Some(option_idx) == selected_idx {
+                    "●"
+                } else {
+                    "○"
+                };
+                replace_segment(&mut line, 0, &format!("{pointer}{marker} "));
+                let label =
+                    truncate_to_width(self.options[option_idx].as_str(), width.saturating_sub(3));
+                replace_segment(&mut line, 3, &label);
+
+                let style = if is_highlight {
+                    highlight_style
+                } else if Some(option_idx) == selected_idx {
+                    selected_style
+                } else {
+                    base_style
+                };
+
+                frame.print_styled(0, y, &line, style);
+                if width > 1 {
+                    frame.print_styled(1, y, marker, marker_style);
+                }
+            }
+        });
+    }
+}
+
+impl Default for RadioGroup {
+    fn default() -> Self {
+        Self::new(Vec::<String>::new())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Slider {
+    min: u16,
+    max: u16,
+    value: u16,
+    focused: bool,
+    style: Style,
+    track_style: Option<Style>,
+    fill_style: Option<Style>,
+    thumb_style: Option<Style>,
+    focus_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl Slider {
+    pub fn new(min: u16, max: u16) -> Self {
+        let upper = min.max(max);
+        Self {
+            min,
+            max: upper,
+            value: min,
+            focused: false,
+            style: Style::default(),
+            track_style: None,
+            fill_style: None,
+            thumb_style: None,
+            focus_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn value(mut self, value: u16) -> Self {
+        self.value = value.clamp(self.min, self.max);
+        self
+    }
+
+    pub fn step(self, step: u16) -> Self {
+        let _ = step;
+        self
+    }
+
+    pub fn focused(mut self, focused: bool) -> Self {
+        self.focused = focused;
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn track_style(mut self, style: Style) -> Self {
+        self.track_style = Some(style);
+        self
+    }
+
+    pub fn fill_style(mut self, style: Style) -> Self {
+        self.fill_style = Some(style);
+        self
+    }
+
+    pub fn thumb_style(mut self, style: Style) -> Self {
+        self.thumb_style = Some(style);
+        self
+    }
+
+    pub fn focus_style(mut self, style: Style) -> Self {
+        self.focus_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let track_style = self.track_style.unwrap_or(base_style);
+        let fill_style = self.fill_style.unwrap_or(track_style);
+        let thumb_style = self.thumb_style.unwrap_or(fill_style);
+        let focus_style = self.focus_style.unwrap_or(base_style);
+
+        let range = self.max.saturating_sub(self.min) as usize;
+        let value = self.value.clamp(self.min, self.max) as usize;
+        let rel = value.saturating_sub(self.min as usize);
+        let thumb_pos = if width <= 1 || range == 0 {
+            0
+        } else {
+            (rel * (width - 1)) / range
+        };
+
+        frame.render_in(area, |frame| {
+            let row = " ".repeat(width);
+            frame.print_styled(0, 0, &row, base_style);
+            if self.focused {
+                frame.print_styled(0, 0, &row, focus_style);
+            }
+
+            let track = "─".repeat(width);
+            frame.print_styled(0, 0, &track, track_style);
+
+            let fill = "━".repeat(thumb_pos.saturating_add(1));
+            frame.print_styled(0, 0, &fill, fill_style);
+            frame.print_styled(thumb_pos as u16, 0, "●", thumb_style);
+        });
+    }
+}
+
+impl Default for Slider {
+    fn default() -> Self {
+        Self::new(0, 100)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Switch {
+    on: bool,
+    focused: bool,
+    style: Style,
+    on_style: Option<Style>,
+    off_style: Option<Style>,
+    thumb_style: Option<Style>,
+    focus_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl Switch {
+    pub fn new() -> Self {
+        Self {
+            on: false,
+            focused: false,
+            style: Style::default(),
+            on_style: None,
+            off_style: None,
+            thumb_style: None,
+            focus_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn on(mut self, on: bool) -> Self {
+        self.on = on;
+        self
+    }
+
+    pub fn focused(mut self, focused: bool) -> Self {
+        self.focused = focused;
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn on_style(mut self, style: Style) -> Self {
+        self.on_style = Some(style);
+        self
+    }
+
+    pub fn off_style(mut self, style: Style) -> Self {
+        self.off_style = Some(style);
+        self
+    }
+
+    pub fn thumb_style(mut self, style: Style) -> Self {
+        self.thumb_style = Some(style);
+        self
+    }
+
+    pub fn focus_style(mut self, style: Style) -> Self {
+        self.focus_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let on_style = self.on_style.unwrap_or(base_style);
+        let off_style = self.off_style.unwrap_or(base_style);
+        let thumb_style = self.thumb_style.unwrap_or(base_style);
+        let focus_style = self.focus_style.unwrap_or(base_style);
+
+        frame.render_in(area, |frame| {
+            let row = " ".repeat(width);
+            frame.print_styled(0, 0, &row, base_style);
+            if self.focused {
+                frame.print_styled(0, 0, &row, focus_style);
+            }
+
+            let track = if self.on { "[ ON ]" } else { "[OFF ]" };
+            let clipped = truncate_to_width(track, width);
+            frame.print_styled(0, 0, &clipped, if self.on { on_style } else { off_style });
+
+            let thumb_x = if self.on { 4 } else { 1 };
+            if width > thumb_x {
+                frame.print_styled(thumb_x as u16, 0, "●", thumb_style);
+            }
+        });
+    }
+}
+
+impl Default for Switch {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Stepper {
+    min: u16,
+    max: u16,
+    value: u16,
+    step: u16,
+    focused: bool,
+    style: Style,
+    value_style: Option<Style>,
+    controls_style: Option<Style>,
+    focus_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl Stepper {
+    pub fn new(min: u16, max: u16) -> Self {
+        let upper = min.max(max);
+        Self {
+            min,
+            max: upper,
+            value: min,
+            step: 1,
+            focused: false,
+            style: Style::default(),
+            value_style: None,
+            controls_style: None,
+            focus_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn value(mut self, value: u16) -> Self {
+        self.value = value.clamp(self.min, self.max);
+        self
+    }
+
+    pub fn step(mut self, step: u16) -> Self {
+        self.step = step.max(1);
+        self
+    }
+
+    pub fn focused(mut self, focused: bool) -> Self {
+        self.focused = focused;
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn value_style(mut self, style: Style) -> Self {
+        self.value_style = Some(style);
+        self
+    }
+
+    pub fn controls_style(mut self, style: Style) -> Self {
+        self.controls_style = Some(style);
+        self
+    }
+
+    pub fn focus_style(mut self, style: Style) -> Self {
+        self.focus_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let value_style = self.value_style.unwrap_or(base_style);
+        let controls_style = self.controls_style.unwrap_or(base_style);
+        let focus_style = self.focus_style.unwrap_or(base_style);
+        let _step = self.step;
+
+        let value = self.value.clamp(self.min, self.max);
+        let value_width = self.max.max(self.min).to_string().len().max(1);
+        let content = format!("[-] {:>width$} [+]", value, width = value_width);
+        let clipped = truncate_to_width(&content, width);
+        let value_start = 4;
+
+        frame.render_in(area, |frame| {
+            let row = " ".repeat(width);
+            frame.print_styled(0, 0, &row, base_style);
+            if self.focused {
+                frame.print_styled(0, 0, &row, focus_style);
+            }
+
+            frame.print_styled(0, 0, &clipped, base_style);
+            if width >= 3 {
+                frame.print_styled(0, 0, "[-]", controls_style);
+            }
+            if width > value_start {
+                let value_text = truncate_to_width(value.to_string().as_str(), value_width);
+                frame.print_styled(value_start as u16, 0, &value_text, value_style);
+            }
+            if width > value_start + value_width + 1 {
+                let plus_start = value_start + value_width + 1;
+                let plus = truncate_to_width("[+]", width.saturating_sub(plus_start));
+                frame.print_styled(plus_start as u16, 0, &plus, controls_style);
+            }
+        });
+    }
+}
+
+impl Default for Stepper {
+    fn default() -> Self {
+        Self::new(0, 10)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProgressBar {
+    value: u16,
+    max: u16,
+    show_label: bool,
+    style: Style,
+    track_style: Option<Style>,
+    fill_style: Option<Style>,
+    label_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl ProgressBar {
+    pub fn new() -> Self {
+        Self {
+            value: 0,
+            max: 100,
+            show_label: true,
+            style: Style::default(),
+            track_style: None,
+            fill_style: None,
+            label_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn value(mut self, value: u16) -> Self {
+        self.value = value;
+        self
+    }
+
+    pub fn max(mut self, max: u16) -> Self {
+        self.max = max.max(1);
+        self
+    }
+
+    pub fn show_label(mut self, show_label: bool) -> Self {
+        self.show_label = show_label;
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn track_style(mut self, style: Style) -> Self {
+        self.track_style = Some(style);
+        self
+    }
+
+    pub fn fill_style(mut self, style: Style) -> Self {
+        self.fill_style = Some(style);
+        self
+    }
+
+    pub fn label_style(mut self, style: Style) -> Self {
+        self.label_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let track_style = self.track_style.unwrap_or(base_style);
+        let fill_style = self.fill_style.unwrap_or(track_style);
+        let label_style = self.label_style.unwrap_or(base_style);
+
+        let max = self.max.max(1) as usize;
+        let value = self.value.min(self.max) as usize;
+        let filled = (value * width) / max;
+
+        frame.render_in(area, |frame| {
+            let track = "░".repeat(width);
+            frame.print_styled(0, 0, &track, track_style);
+            if filled > 0 {
+                let fill = "█".repeat(filled);
+                frame.print_styled(0, 0, &fill, fill_style);
+            }
+
+            if self.show_label {
+                let percent = (value * 100) / max;
+                let label = format!("{percent:>3}%");
+                let clipped = truncate_to_width(&label, width);
+                let x = width.saturating_sub(clipped.chars().count());
+                frame.print_styled(x as u16, 0, &clipped, label_style);
+            }
+        });
+    }
+}
+
+impl Default for ProgressBar {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MultiSelect {
+    options: Vec<String>,
+    selected: Vec<usize>,
+    highlighted: usize,
+    focused: bool,
+    max_visible: Option<usize>,
+    style: Style,
+    selected_style: Option<Style>,
+    highlight_style: Option<Style>,
+    marker_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl MultiSelect {
+    pub fn new<I, S>(options: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: Into<String>,
+    {
+        Self {
+            options: options.into_iter().map(Into::into).collect(),
+            selected: Vec::new(),
+            highlighted: 0,
+            focused: false,
+            max_visible: None,
+            style: Style::default(),
+            selected_style: None,
+            highlight_style: None,
+            marker_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn selected(mut self, selected: Vec<usize>) -> Self {
+        self.selected = selected;
+        self
+    }
+
+    pub fn highlighted(mut self, highlighted: usize) -> Self {
+        self.highlighted = highlighted;
+        self
+    }
+
+    pub fn focused(mut self, focused: bool) -> Self {
+        self.focused = focused;
+        self
+    }
+
+    pub fn max_visible(mut self, max_visible: usize) -> Self {
+        self.max_visible = Some(max_visible.max(1));
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn selected_style(mut self, style: Style) -> Self {
+        self.selected_style = Some(style);
+        self
+    }
+
+    pub fn highlight_style(mut self, style: Style) -> Self {
+        self.highlight_style = Some(style);
+        self
+    }
+
+    pub fn marker_style(mut self, style: Style) -> Self {
+        self.marker_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 || self.options.is_empty() {
+            return;
+        }
+
+        let width = area.width as usize;
+        let base_style = self.style;
+        let selected_style = self.selected_style.unwrap_or(base_style);
+        let highlight_style = self.highlight_style.unwrap_or(selected_style);
+        let marker_style = self.marker_style.unwrap_or(base_style);
+        let highlighted = self.highlighted.min(self.options.len().saturating_sub(1));
+
+        let viewport = area.height as usize;
+        let max_visible = self.max_visible.unwrap_or(self.options.len());
+        let rows = viewport.min(max_visible.max(1));
+        let start = scroll_start(highlighted, rows, self.options.len());
+        let end = (start + rows).min(self.options.len());
+
+        frame.render_in(area, |frame| {
+            for (row_idx, option_idx) in (start..end).enumerate() {
+                let y = row_idx as u16;
+                let mut line = " ".repeat(width);
+                let is_selected = self.selected.contains(&option_idx);
+                let is_highlight = self.focused && option_idx == highlighted;
+                let pointer = if is_highlight { "›" } else { " " };
+                let marker = if is_selected { "x" } else { " " };
+                replace_segment(&mut line, 0, &format!("{pointer}[{marker}] "));
+                let label =
+                    truncate_to_width(self.options[option_idx].as_str(), width.saturating_sub(5));
+                replace_segment(&mut line, 5, &label);
+
+                let style = if is_highlight {
+                    highlight_style
+                } else if is_selected {
+                    selected_style
+                } else {
+                    base_style
+                };
+                frame.print_styled(0, y, &line, style);
+                if width > 2 {
+                    frame.print_styled(1, y, "[", marker_style);
+                    frame.print_styled(2, y, marker, marker_style);
+                    frame.print_styled(3, y, "]", marker_style);
+                }
+            }
+        });
+    }
+}
+
+impl Default for MultiSelect {
+    fn default() -> Self {
+        Self::new(Vec::<String>::new())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FormField {
     label: String,
     help_text: Option<String>,
@@ -1747,10 +3031,12 @@ mod tests {
     use crate::Frame;
 
     use super::{
-        apply_input_edit, Alignment, Block, BorderType, Borders, Constraint, Direction, FormField,
-        FormFieldStyle, Input, InputEdit, InputStyle, LayoutNode, List, ListStyle, Padding, Panel,
-        PanelStyle, Paragraph, Slot, StatusBar, StatusBarStyle, Table, TableColumn, TableStyle,
-        Tabs, TabsStyle, Text, WrapMode,
+        apply_input_edit, Alignment, Block, BorderType, Borders, Checkbox, CheckboxStyle,
+        Constraint, Direction, FormField, FormFieldStyle, Input, InputEdit, InputStyle, LayoutNode,
+        List, ListStyle, MultiSelect, MultiSelectStyle, Padding, Panel, PanelStyle, Paragraph,
+        ProgressBar, ProgressBarStyle, RadioGroup, RadioGroupStyle, Select, SelectStyle, Slider,
+        SliderStyle, Slot, StatusBar, StatusBarStyle, Stepper, StepperStyle, Switch, SwitchStyle,
+        Table, TableColumn, TableStyle, Tabs, TabsStyle, Text, WrapMode,
     };
     use crate::{Color, Rect, Style, Theme};
 
@@ -2123,13 +3409,251 @@ mod tests {
     }
 
     #[test]
+    fn select_renders_collapsed_value_and_indicator() {
+        let mut frame = Frame::new(14, 1);
+        Select::new(["dev", "stage", "prod"])
+            .selected(2)
+            .render(&mut frame, Rect::new(0, 0, 14, 1));
+
+        assert_eq!(frame.char_at(0, 0), Some('p'));
+        assert_eq!(frame.char_at(13, 0), Some('▾'));
+    }
+
+    #[test]
+    fn select_open_shows_highlight_and_selected_markers() {
+        let mut frame = Frame::new(12, 4);
+        Select::new(["dev", "stage", "prod"])
+            .selected(0)
+            .highlighted(1)
+            .expanded(true)
+            .render(&mut frame, Rect::new(0, 0, 12, 4));
+
+        assert_eq!(frame.char_at(1, 1), Some('●'));
+        assert_eq!(frame.char_at(0, 2), Some('›'));
+    }
+
+    #[test]
+    fn select_scrolls_to_keep_highlight_visible() {
+        let mut frame = Frame::new(10, 3);
+        Select::new(["item0", "item1", "item2", "item3", "item4"])
+            .highlighted(4)
+            .expanded(true)
+            .render(&mut frame, Rect::new(0, 0, 10, 3));
+
+        assert_eq!(frame.char_at(7, 1), Some('3'));
+        assert_eq!(frame.char_at(0, 2), Some('›'));
+        assert_eq!(frame.char_at(7, 2), Some('4'));
+    }
+
+    #[test]
+    fn checkbox_renders_checked_marker() {
+        let mut frame = Frame::new(14, 1);
+        Checkbox::new("Auto deploy")
+            .checked(true)
+            .render(&mut frame, Rect::new(0, 0, 14, 1));
+
+        assert_eq!(frame.char_at(0, 0), Some('['));
+        assert_eq!(frame.char_at(1, 0), Some('x'));
+        assert_eq!(frame.char_at(4, 0), Some('A'));
+    }
+
+    #[test]
+    fn checkbox_applies_focus_style() {
+        let mut frame = Frame::new(10, 1);
+        let focus = Style::new().bg(Color::Ansi(111));
+        Checkbox::new("A")
+            .focused(true)
+            .focus_style(focus)
+            .render(&mut frame, Rect::new(0, 0, 10, 1));
+
+        assert_eq!(frame.style_at(4, 0), Some(focus));
+    }
+
+    #[test]
+    fn radio_group_renders_selected_marker() {
+        let mut frame = Frame::new(14, 2);
+        RadioGroup::new(["rolling", "canary"])
+            .selected(1)
+            .render(&mut frame, Rect::new(0, 0, 14, 2));
+
+        assert_eq!(frame.char_at(1, 1), Some('●'));
+        assert_eq!(frame.char_at(3, 1), Some('c'));
+    }
+
+    #[test]
+    fn radio_group_uses_highlight_when_focused() {
+        let mut frame = Frame::new(12, 2);
+        let highlight = Style::new().bg(Color::Ansi(113));
+        RadioGroup::new(["a", "b"])
+            .highlighted(1)
+            .focused(true)
+            .highlight_style(highlight)
+            .render(&mut frame, Rect::new(0, 0, 12, 2));
+
+        assert_eq!(frame.char_at(0, 1), Some('›'));
+        assert_eq!(frame.style_at(0, 1), Some(highlight));
+    }
+
+    #[test]
+    fn radio_group_scrolls_to_keep_highlight_visible() {
+        let mut frame = Frame::new(12, 2);
+        RadioGroup::new(["v0", "v1", "v2", "v3", "v4"])
+            .highlighted(4)
+            .focused(true)
+            .render(&mut frame, Rect::new(0, 0, 12, 2));
+
+        assert_eq!(frame.char_at(4, 0), Some('3'));
+        assert_eq!(frame.char_at(0, 1), Some('›'));
+        assert_eq!(frame.char_at(4, 1), Some('4'));
+    }
+
+    #[test]
+    fn slider_places_thumb_from_value() {
+        let mut frame = Frame::new(10, 1);
+        Slider::new(0, 100)
+            .value(50)
+            .render(&mut frame, Rect::new(0, 0, 10, 1));
+
+        assert_eq!(frame.char_at(4, 0), Some('●'));
+    }
+
+    #[test]
+    fn slider_clamps_value_to_bounds() {
+        let mut frame = Frame::new(8, 1);
+        Slider::new(0, 10)
+            .value(99)
+            .render(&mut frame, Rect::new(0, 0, 8, 1));
+
+        assert_eq!(frame.char_at(7, 0), Some('●'));
+    }
+
+    #[test]
+    fn switch_renders_on_and_off_positions() {
+        let mut frame = Frame::new(8, 1);
+        Switch::new()
+            .on(false)
+            .render(&mut frame, Rect::new(0, 0, 8, 1));
+        assert_eq!(frame.char_at(1, 0), Some('●'));
+
+        let mut frame2 = Frame::new(8, 1);
+        Switch::new()
+            .on(true)
+            .render(&mut frame2, Rect::new(0, 0, 8, 1));
+        assert_eq!(frame2.char_at(4, 0), Some('●'));
+    }
+
+    #[test]
+    fn switch_applies_focus_style() {
+        let mut frame = Frame::new(8, 1);
+        let focus = Style::new().bg(Color::Ansi(111));
+        Switch::new()
+            .focused(true)
+            .focus_style(focus)
+            .render(&mut frame, Rect::new(0, 0, 8, 1));
+
+        assert_eq!(frame.style_at(7, 0), Some(focus));
+    }
+
+    #[test]
+    fn stepper_renders_value_and_controls() {
+        let mut frame = Frame::new(14, 1);
+        Stepper::new(0, 10)
+            .value(7)
+            .render(&mut frame, Rect::new(0, 0, 14, 1));
+
+        assert_eq!(frame.char_at(0, 0), Some('['));
+        assert_eq!(frame.char_at(1, 0), Some('-'));
+        assert_eq!(frame.char_at(4, 0), Some('7'));
+    }
+
+    #[test]
+    fn stepper_clamps_value_to_max() {
+        let mut frame = Frame::new(14, 1);
+        Stepper::new(0, 10)
+            .value(99)
+            .render(&mut frame, Rect::new(0, 0, 14, 1));
+
+        assert_eq!(frame.char_at(4, 0), Some('1'));
+        assert_eq!(frame.char_at(5, 0), Some('0'));
+    }
+
+    #[test]
+    fn stepper_applies_focus_style() {
+        let mut frame = Frame::new(12, 1);
+        let focus = Style::new().bg(Color::Ansi(111));
+        Stepper::new(0, 10)
+            .focused(true)
+            .focus_style(focus)
+            .render(&mut frame, Rect::new(0, 0, 12, 1));
+
+        assert_eq!(frame.style_at(11, 0), Some(focus));
+    }
+
+    #[test]
+    fn progress_bar_renders_fill_ratio() {
+        let mut frame = Frame::new(10, 1);
+        ProgressBar::new()
+            .value(50)
+            .max(100)
+            .show_label(false)
+            .render(&mut frame, Rect::new(0, 0, 10, 1));
+
+        assert_eq!(frame.char_at(4, 0), Some('█'));
+        assert_eq!(frame.char_at(5, 0), Some('░'));
+    }
+
+    #[test]
+    fn progress_bar_shows_percentage_label() {
+        let mut frame = Frame::new(8, 1);
+        ProgressBar::new()
+            .value(75)
+            .max(100)
+            .render(&mut frame, Rect::new(0, 0, 8, 1));
+
+        assert_eq!(frame.char_at(5, 0), Some('7'));
+        assert_eq!(frame.char_at(7, 0), Some('%'));
+    }
+
+    #[test]
+    fn multiselect_marks_selected_items() {
+        let mut frame = Frame::new(14, 2);
+        MultiSelect::new(["a", "b"])
+            .selected(vec![1])
+            .render(&mut frame, Rect::new(0, 0, 14, 2));
+
+        assert_eq!(frame.char_at(2, 1), Some('x'));
+    }
+
+    #[test]
+    fn multiselect_uses_highlight_when_focused() {
+        let mut frame = Frame::new(12, 2);
+        let highlight = Style::new().bg(Color::Ansi(113));
+        MultiSelect::new(["a", "b"])
+            .highlighted(1)
+            .focused(true)
+            .highlight_style(highlight)
+            .render(&mut frame, Rect::new(0, 0, 12, 2));
+
+        assert_eq!(frame.char_at(0, 1), Some('›'));
+        assert_eq!(frame.style_at(0, 1), Some(highlight));
+    }
+
+    #[test]
     fn advanced_style_bundles_use_theme_tokens() {
         let theme = Theme::from_json_str(
             r#"{
               "tokens": {
                 "tabs.active": { "fg": { "ansi": 10 } },
                 "table.header": { "fg": { "ansi": 11 } },
-                "field.error": { "fg": { "ansi": 9 } }
+                "field.error": { "fg": { "ansi": 9 } },
+                "select.highlight": { "fg": { "ansi": 208 } },
+                "checkbox.checked": { "fg": { "ansi": 12 } },
+                "radio.marker": { "fg": { "ansi": 13 } },
+                "slider.thumb": { "fg": { "ansi": 14 } },
+                "switch.thumb": { "fg": { "ansi": 15 } },
+                "stepper.controls": { "fg": { "ansi": 81 } },
+                "progress.fill": { "fg": { "ansi": 118 } },
+                "multiselect.marker": { "fg": { "ansi": 177 } }
               }
             }"#,
         )
@@ -2138,9 +3662,25 @@ mod tests {
         let tabs = TabsStyle::from_theme(&theme);
         let table = TableStyle::from_theme(&theme);
         let field = FormFieldStyle::from_theme(&theme);
+        let select = SelectStyle::from_theme(&theme);
+        let checkbox = CheckboxStyle::from_theme(&theme);
+        let radio = RadioGroupStyle::from_theme(&theme);
+        let slider = SliderStyle::from_theme(&theme);
+        let switch = SwitchStyle::from_theme(&theme);
+        let stepper = StepperStyle::from_theme(&theme);
+        let progress = ProgressBarStyle::from_theme(&theme);
+        let multiselect = MultiSelectStyle::from_theme(&theme);
 
         assert_eq!(tabs.active.fg, Some(Color::Ansi(10)));
         assert_eq!(table.header.fg, Some(Color::Ansi(11)));
         assert_eq!(field.error.fg, Some(Color::Ansi(9)));
+        assert_eq!(select.highlight.fg, Some(Color::Ansi(208)));
+        assert_eq!(checkbox.checked.fg, Some(Color::Ansi(12)));
+        assert_eq!(radio.marker.fg, Some(Color::Ansi(13)));
+        assert_eq!(slider.thumb.fg, Some(Color::Ansi(14)));
+        assert_eq!(switch.thumb.fg, Some(Color::Ansi(15)));
+        assert_eq!(stepper.controls.fg, Some(Color::Ansi(81)));
+        assert_eq!(progress.fill.fg, Some(Color::Ansi(118)));
+        assert_eq!(multiselect.marker.fg, Some(Color::Ansi(177)));
     }
 }

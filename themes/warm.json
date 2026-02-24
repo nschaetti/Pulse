@@ -53,6 +53,48 @@
     "input.cursor": { "fg": { "ansi": 16 }, "bg": { "ansi": 214 } },
     "input.focus": { "bg": { "rgb": [78, 39, 18] } },
 
+    "select.base": { "fg": { "ansi": 230 }, "bg": { "rgb": [58, 29, 13] } },
+    "select.selected": { "fg": { "ansi": 16 }, "bg": { "ansi": 214 } },
+    "select.dropdown": { "fg": { "ansi": 230 }, "bg": { "rgb": [66, 34, 15] } },
+    "select.highlight": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] }, "modifiers": ["bold"] },
+
+    "checkbox.base": { "fg": { "ansi": 230 } },
+    "checkbox.checked": { "fg": { "ansi": 16 }, "bg": { "ansi": 214 }, "modifiers": ["bold"] },
+    "checkbox.box": { "fg": { "ansi": 214 } },
+    "checkbox.focus": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] } },
+
+    "radio.base": { "fg": { "ansi": 230 } },
+    "radio.selected": { "fg": { "ansi": 16 }, "bg": { "ansi": 214 }, "modifiers": ["bold"] },
+    "radio.highlight": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] } },
+    "radio.marker": { "fg": { "ansi": 214 } },
+
+    "slider.base": { "fg": { "ansi": 230 } },
+    "slider.track": { "fg": { "ansi": 180 } },
+    "slider.fill": { "fg": { "ansi": 214 } },
+    "slider.thumb": { "fg": { "ansi": 214 }, "modifiers": ["bold"] },
+    "slider.focus": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] } },
+
+    "switch.base": { "fg": { "ansi": 230 } },
+    "switch.on": { "fg": { "ansi": 16 }, "bg": { "ansi": 214 }, "modifiers": ["bold"] },
+    "switch.off": { "fg": { "ansi": 230 }, "bg": { "rgb": [94, 46, 20] } },
+    "switch.thumb": { "fg": { "ansi": 230 } },
+    "switch.focus": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] } },
+
+    "stepper.base": { "fg": { "ansi": 230 } },
+    "stepper.value": { "fg": { "ansi": 230 }, "modifiers": ["bold"] },
+    "stepper.controls": { "fg": { "ansi": 214 } },
+    "stepper.focus": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] } },
+
+    "progress.base": { "fg": { "ansi": 230 } },
+    "progress.track": { "fg": { "ansi": 180 } },
+    "progress.fill": { "fg": { "ansi": 214 } },
+    "progress.label": { "fg": { "ansi": 230 }, "modifiers": ["bold"] },
+
+    "multiselect.base": { "fg": { "ansi": 230 } },
+    "multiselect.selected": { "fg": { "ansi": 16 }, "bg": { "ansi": 214 } },
+    "multiselect.highlight": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] }, "modifiers": ["bold"] },
+    "multiselect.marker": { "fg": { "ansi": 214 } },
+
     "list.item": { "fg": { "ansi": 230 }, "bg": { "rgb": [66, 34, 15] } },
     "list.selected": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] }, "modifiers": ["bold"] }
   }

@@ -109,7 +109,7 @@ Theme-driven examples (`settings`, `admin_console`, `log_explorer`, `interface_l
 - `Padding` + `Text`: simple primitives to visualize and populate resolved zones
 - `Block` + `List`: baseline widgets for framed sections and scrollable selection
 - `Paragraph` + `StatusBar` + `Input`: higher-level text, status, and editing widgets
-- `Tabs` + `Table` + `FormField`: advanced navigation, data, and form composition widgets
+- `Tabs` + `Table` + `FormField` + `Select` + `Checkbox` + `RadioGroup` + `Slider` + `Switch` + `Stepper` + `ProgressBar` + `MultiSelect`: advanced navigation, data, and form composition widgets
 - `Component` and `update_child`: parent/child composition with lifted messages
 
 Inline styling quick sample:

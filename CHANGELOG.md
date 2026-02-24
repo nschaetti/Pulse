@@ -18,7 +18,7 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - Core style system with ANSI256/RGB colors, text modifiers, and styled frame rendering.
 - Strict JSON theme loader with token-based style lookup (`Theme`).
 - Additional widgets: `Paragraph`, `StatusBar`, and editable `Input` with cursor handling helpers.
-- Advanced widgets: `Tabs`, `Table` (with left/center/right alignment), and `FormField`.
+- Advanced widgets: `Tabs`, `Table` (with left/center/right alignment), `FormField`, `Select`, `Checkbox`, `RadioGroup`, `Slider`, `Switch`, `Stepper`, `ProgressBar`, and `MultiSelect`.
 - New examples: event runtime (`examples/events.rs`), component composition (`examples/composition.rs`), and interface shell (`examples/interface_layout.rs`).
 - Criterion benchmark suites for frame, layout, and command paths (`benches/*.rs`).
 - Report-only performance baseline documentation (`docs/perf.md`).
@@ -32,6 +32,14 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - `examples/settings.rs` now loads external theme files from `themes/*.json` and switches themes at runtime.
 - `examples/admin_console.rs`, `examples/log_explorer.rs`, and `examples/interface_layout.rs` now use external JSON themes and runtime palette switching.
 - New widget examples: `tabs_demo`, `table_demo`, and `form_demo`.
+- `examples/form_demo.rs` now includes a keyboard-driven `Select` field integrated with form focus flow.
+- `examples/form_demo.rs` now includes a keyboard-driven `Checkbox` toggle integrated with form focus flow.
+- `examples/form_demo.rs` now includes a keyboard-driven `RadioGroup` for release strategy selection.
+- `examples/form_demo.rs` now includes a keyboard-driven `Slider` for traffic rollout percentage.
+- `examples/form_demo.rs` now includes a keyboard-driven `Switch` for maintenance mode.
+- `examples/form_demo.rs` now includes a keyboard-driven `Stepper` for retry budget.
+- `examples/form_demo.rs` now includes a themed `ProgressBar` derived from traffic rollout.
+- `examples/form_demo.rs` now includes a keyboard-driven `MultiSelect` for feature flags.
 - `settings`, `log_explorer`, and footer bars now use the new widget layer (`Input`, `Paragraph`, `StatusBar`).
 - `examples/settings.rs` now applies live list filtering with focus-aware input editing and stable selection clamping.
 
