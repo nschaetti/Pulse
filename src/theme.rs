@@ -32,6 +32,10 @@ impl Theme {
     pub fn style(&self, token: &str) -> Option<Style> {
         self.tokens.get(token).copied()
     }
+
+    pub fn style_or(&self, token: &str, fallback: Style) -> Style {
+        self.style(token).unwrap_or(fallback)
+    }
 }
 
 #[derive(Debug)]
@@ -152,7 +156,7 @@ impl ModifierSpec {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Color, Modifier};
+    use crate::{Color, Modifier, Style};
 
     use super::Theme;
 
@@ -257,5 +261,14 @@ mod tests {
             .and_then(|s| s.fg)
             .unwrap_or(fallback);
         assert_eq!(resolved, fallback);
+    }
+
+    #[test]
+    fn style_or_returns_fallback_when_missing() {
+        let input = r#"{ "tokens": {} }"#;
+        let theme = Theme::from_json_str(input).expect("theme should parse");
+        let fallback = Style::new().fg(Color::Ansi(200));
+
+        assert_eq!(theme.style_or("missing.token", fallback), fallback);
     }
 }

@@ -2,8 +2,8 @@ use std::io;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use pulse::{
-    run, App, Block, Color, Command, Constraint, Direction, Frame, LayoutNode, List, Padding, Rect,
-    Slot, StatusBar, Style, Text, Theme,
+    run, App, Color, Command, Constraint, Direction, Frame, LayoutNode, List, ListStyle, Padding,
+    Panel, PanelStyle, Rect, Slot, StatusBar, StatusBarStyle, Style, Text, Theme,
 };
 
 const NAV_ITEMS: [&str; 7] = [
@@ -55,104 +55,59 @@ impl App for AdminConsole {
         let root = Rect::new(0, 0, frame.width(), frame.height());
         let zones = self.layout.resolve(root);
         let theme = &self.themes[self.theme_idx];
+        let panel_styles = PanelStyle::from_theme(theme);
+        let list_styles = ListStyle::from_theme(theme);
+        let status_styles = StatusBarStyle::from_theme(theme);
 
         if let Some(area) = zones.area("header") {
-            let block = panel_block(theme, "Pulse Admin");
-            block.render(frame, area);
-            Text::new("Cluster: prod-eu-west | Status: healthy")
-                .style(style_from(
-                    theme,
-                    "app.header.text",
-                    Style::new().fg(Color::Ansi(252)),
-                ))
-                .render(frame, block.inner_area(area));
+            Panel::new("Pulse Admin")
+                .styles(panel_styles)
+                .padding(Padding::all(1))
+                .render(frame, area, |frame, inner| {
+                    Text::new("Cluster: prod-eu-west | Status: healthy")
+                        .style(theme.style_or("app.header.text", Style::new().fg(Color::Ansi(252))))
+                        .render(frame, inner);
+                });
         }
 
         if let Some(area) = zones.area("sidebar") {
-            let block = panel_block(theme, "Navigation");
-            block.render(frame, area);
-            List::new(NAV_ITEMS)
-                .selected(self.selected)
-                .item_style(style_from(
-                    theme,
-                    "list.item",
-                    Style::new().fg(Color::Ansi(252)),
-                ))
-                .selected_style(style_from(
-                    theme,
-                    "list.selected",
-                    Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
-                ))
-                .render(frame, block.inner_area(area));
+            Panel::new("Navigation")
+                .styles(panel_styles)
+                .padding(Padding::all(1))
+                .render(frame, area, |frame, inner| {
+                    List::new(NAV_ITEMS)
+                        .selected(self.selected)
+                        .item_style(list_styles.item)
+                        .selected_style(list_styles.selected)
+                        .render(frame, inner);
+                });
         }
 
         if let Some(area) = zones.area("content") {
-            let block = panel_block(theme, "Panel");
-            block.render(frame, area);
-            Text::new(format!(
-                "Selected: {}\n\nUse this area to mount domain widgets.",
-                NAV_ITEMS[self.selected]
-            ))
-            .style(style_from(
-                theme,
-                "text.primary",
-                Style::new().fg(Color::Ansi(252)),
-            ))
-            .render(frame, block.inner_area(area));
+            Panel::new("Panel")
+                .styles(panel_styles)
+                .padding(Padding::all(1))
+                .render(frame, area, |frame, inner| {
+                    Text::new(format!(
+                        "Selected: {}\n\nUse this area to mount domain widgets.",
+                        NAV_ITEMS[self.selected]
+                    ))
+                    .style(theme.style_or("text.primary", Style::new().fg(Color::Ansi(252))))
+                    .render(frame, inner);
+                });
         }
 
         if let Some(area) = zones.area("footer") {
             StatusBar::new()
                 .left("up/down or j/k: navigate")
                 .right("1/2/3: theme | q: quit")
-                .style(style_from(
-                    theme,
-                    "statusbar.bg",
-                    style_from(
-                        theme,
-                        "app.footer.bg",
-                        Style::new().bg(Color::Rgb(28, 28, 28)),
-                    ),
-                ))
-                .left_style(style_from(
-                    theme,
-                    "statusbar.left",
-                    style_from(theme, "app.footer.text", Style::new().fg(Color::Ansi(250))),
-                ))
-                .right_style(style_from(
-                    theme,
-                    "statusbar.right",
-                    style_from(theme, "app.footer.text", Style::new().fg(Color::Ansi(250))),
-                ))
+                .style(status_styles.base)
+                .left_style(status_styles.left)
+                .right_style(status_styles.right)
                 .margin(Padding::symmetric(0, 1))
                 .render(frame, area);
         }
     }
-}
-
-fn panel_block(theme: &Theme, title: &str) -> Block {
-    Block::new()
-        .title(title)
-        .body_style(style_from(
-            theme,
-            "panel.body",
-            Style::new().bg(Color::Rgb(22, 32, 56)),
-        ))
-        .border_style(style_from(
-            theme,
-            "panel.border",
-            Style::new().fg(Color::Ansi(39)),
-        ))
-        .title_style(style_from(
-            theme,
-            "panel.title",
-            Style::new().fg(Color::Rgb(200, 220, 255)),
-        ))
-        .padding(Padding::all(1))
-}
-
-fn style_from(theme: &Theme, token: &str, fallback: Style) -> Style {
-    theme.style(token).unwrap_or(fallback)
 }
 
 fn build_layout() -> LayoutNode {

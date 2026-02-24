@@ -1,4 +1,4 @@
-use crate::{Frame, Rect, Style};
+use crate::{Color, Frame, Rect, Style, Theme};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Direction {
@@ -522,6 +522,147 @@ impl Input {
 impl Default for Input {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct PanelStyle {
+    pub body: Style,
+    pub border: Style,
+    pub title: Style,
+}
+
+impl PanelStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self::from_theme_prefix(theme, "panel")
+    }
+
+    pub fn from_theme_prefix(theme: &Theme, prefix: &str) -> Self {
+        Self {
+            body: theme.style_or(
+                &format!("{prefix}.body"),
+                Style::new().bg(Color::Rgb(22, 32, 56)),
+            ),
+            border: theme.style_or(
+                &format!("{prefix}.border"),
+                Style::new().fg(Color::Ansi(39)),
+            ),
+            title: theme.style_or(
+                &format!("{prefix}.title"),
+                Style::new().fg(Color::Rgb(200, 220, 255)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ListStyle {
+    pub item: Style,
+    pub selected: Style,
+}
+
+impl ListStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            item: theme.style_or(
+                "list.item",
+                Style::new().fg(Color::Ansi(252)).bg(Color::Rgb(22, 32, 56)),
+            ),
+            selected: theme.style_or(
+                "list.selected",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct StatusBarStyle {
+    pub base: Style,
+    pub left: Style,
+    pub right: Style,
+}
+
+impl StatusBarStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        let fallback_base =
+            theme.style_or("app.footer.bg", Style::new().bg(Color::Rgb(28, 28, 28)));
+        let fallback_text = theme.style_or("app.footer.text", Style::new().fg(Color::Ansi(250)));
+
+        Self {
+            base: theme.style_or("statusbar.bg", fallback_base),
+            left: theme.style_or("statusbar.left", fallback_text),
+            right: theme.style_or("statusbar.right", fallback_text),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct InputStyle {
+    pub base: Style,
+    pub focus: Style,
+    pub placeholder: Style,
+    pub cursor: Style,
+}
+
+impl InputStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("input.text", Style::new().fg(Color::Ansi(252))),
+            focus: theme.style_or("input.focus", Style::new().bg(Color::Rgb(28, 38, 68))),
+            placeholder: theme.style_or("input.placeholder", Style::new().fg(Color::Ansi(244))),
+            cursor: theme.style_or(
+                "input.cursor",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Panel {
+    block: Block,
+}
+
+impl Panel {
+    pub fn new(title: impl Into<String>) -> Self {
+        Self {
+            block: Block::new().title(title),
+        }
+    }
+
+    pub fn block(mut self, block: Block) -> Self {
+        self.block = block;
+        self
+    }
+
+    pub fn styles(mut self, styles: PanelStyle) -> Self {
+        self.block = self
+            .block
+            .body_style(styles.body)
+            .border_style(styles.border)
+            .title_style(styles.title);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.block = self.block.padding(padding);
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.block = self.block.margin(margin);
+        self
+    }
+
+    pub fn render(
+        &self,
+        frame: &mut Frame,
+        area: Rect,
+        render_inner: impl FnOnce(&mut Frame, Rect),
+    ) {
+        self.block.render(frame, area);
+        render_inner(frame, self.block.inner_area(area));
     }
 }
 
@@ -1095,9 +1236,10 @@ mod tests {
 
     use super::{
         apply_input_edit, Block, BorderType, Borders, Constraint, Direction, Input, InputEdit,
-        LayoutNode, List, Padding, Paragraph, Slot, StatusBar, Text, WrapMode,
+        InputStyle, LayoutNode, List, ListStyle, Padding, Panel, PanelStyle, Paragraph, Slot,
+        StatusBar, StatusBarStyle, Text, WrapMode,
     };
-    use crate::{Color, Rect, Style};
+    use crate::{Color, Rect, Style, Theme};
 
     #[test]
     fn resolve_mixed_constraints_and_preserve_width() {
@@ -1378,5 +1520,47 @@ mod tests {
             .wrap(WrapMode::NoWrap)
             .render(&mut frame2, Rect::new(0, 0, 3, 2));
         assert_eq!(frame2.char_at(0, 1), Some(' '));
+    }
+
+    #[test]
+    fn style_bundles_use_theme_tokens() {
+        let theme = Theme::from_json_str(
+            r#"{
+                "tokens": {
+                    "panel.title": { "fg": { "ansi": 111 } },
+                    "list.selected": { "fg": { "ansi": 222 } },
+                    "statusbar.right": { "fg": { "ansi": 123 } },
+                    "input.placeholder": { "fg": { "ansi": 77 } }
+                }
+            }"#,
+        )
+        .expect("theme should parse");
+
+        let panel = PanelStyle::from_theme(&theme);
+        let list = ListStyle::from_theme(&theme);
+        let status = StatusBarStyle::from_theme(&theme);
+        let input = InputStyle::from_theme(&theme);
+
+        assert_eq!(panel.title.fg, Some(Color::Ansi(111)));
+        assert_eq!(list.selected.fg, Some(Color::Ansi(222)));
+        assert_eq!(status.right.fg, Some(Color::Ansi(123)));
+        assert_eq!(input.placeholder.fg, Some(Color::Ansi(77)));
+    }
+
+    #[test]
+    fn panel_wrapper_renders_title_and_inner() {
+        let mut frame = Frame::new(12, 4);
+        let panel = Panel::new("x").styles(PanelStyle {
+            body: Style::new(),
+            border: Style::new(),
+            title: Style::new(),
+        });
+
+        panel.render(&mut frame, Rect::new(0, 0, 12, 4), |f, inner| {
+            f.render_in(inner, |f| f.print(0, 0, "ok"));
+        });
+
+        assert_eq!(frame.char_at(2, 0), Some('x'));
+        assert_eq!(frame.char_at(1, 1), Some('o'));
     }
 }

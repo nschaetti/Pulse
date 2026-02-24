@@ -22,5 +22,6 @@ pub use style::{Color, Modifier, ModifierSet, Style};
 pub use theme::{Theme, ThemeError};
 pub use ui::{
     apply_input_edit, Block, BorderType, Borders, Constraint, Direction, Input, InputEdit,
-    LayoutNode, List, Padding, Paragraph, ResolvedLayout, Slot, StatusBar, Text, WrapMode, Zone,
+    InputStyle, LayoutNode, List, ListStyle, Padding, Panel, PanelStyle, Paragraph, ResolvedLayout,
+    Slot, StatusBar, StatusBarStyle, Text, WrapMode, Zone,
 };

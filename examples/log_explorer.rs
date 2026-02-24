@@ -2,8 +2,9 @@ use std::io;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use pulse::{
-    run, App, Block, Color, Command, Constraint, Direction, Frame, LayoutNode, List, Padding,
-    Paragraph, Rect, Slot, StatusBar, Style, Text, Theme, WrapMode,
+    run, App, Color, Command, Constraint, Direction, Frame, LayoutNode, List, ListStyle, Padding,
+    Panel, PanelStyle, Paragraph, Rect, Slot, StatusBar, StatusBarStyle, Style, Text, Theme,
+    WrapMode,
 };
 
 const SOURCES: [&str; 9] = [
@@ -58,41 +59,35 @@ impl App for LogExplorer {
         let root = Rect::new(0, 0, frame.width(), frame.height());
         let zones = self.layout.resolve(root);
         let theme = &self.themes[self.theme_idx];
+        let panel_styles = PanelStyle::from_theme(theme);
+        let list_styles = ListStyle::from_theme(theme);
+        let status_styles = StatusBarStyle::from_theme(theme);
 
         if let Some(area) = zones.area("filters") {
-            let block = panel_block(theme, "Filters");
-            block.render(frame, area);
-            Text::new("level=info  env=prod  since=15m")
-                .style(style_from(
-                    theme,
-                    "text.muted",
-                    Style::new().fg(Color::Ansi(251)),
-                ))
-                .render(frame, block.inner_area(area));
+            Panel::new("Filters")
+                .styles(panel_styles)
+                .padding(Padding::all(1))
+                .render(frame, area, |frame, inner| {
+                    Text::new("level=info  env=prod  since=15m")
+                        .style(theme.style_or("text.muted", Style::new().fg(Color::Ansi(251))))
+                        .render(frame, inner);
+                });
         }
 
         if let Some(area) = zones.area("sources") {
-            let block = panel_block(theme, "Sources");
-            block.render(frame, area);
-            List::new(SOURCES)
-                .selected(self.selected_source)
-                .item_style(style_from(
-                    theme,
-                    "list.item",
-                    Style::new().fg(Color::Ansi(252)),
-                ))
-                .selected_style(style_from(
-                    theme,
-                    "list.selected",
-                    Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
-                ))
-                .render(frame, block.inner_area(area));
+            Panel::new("Sources")
+                .styles(panel_styles)
+                .padding(Padding::all(1))
+                .render(frame, area, |frame, inner| {
+                    List::new(SOURCES)
+                        .selected(self.selected_source)
+                        .item_style(list_styles.item)
+                        .selected_style(list_styles.selected)
+                        .render(frame, inner);
+                });
         }
 
         if let Some(area) = zones.area("logs") {
-            let block = panel_block(theme, "Logs");
-            block.render(frame, area);
-
             let source = SOURCES[self.selected_source];
             let lines = [
                 format!("12:04:13 {} INFO  request completed in 14ms", source),
@@ -104,72 +99,32 @@ impl App for LogExplorer {
                 format!("12:04:10 {} INFO  cache warmed", source),
                 format!("12:04:09 {} INFO  background task heartbeat", source),
             ];
-            Paragraph::new(lines.join("\n"))
-                .wrap(WrapMode::NoWrap)
-                .style(style_from(
-                    theme,
-                    "log.line",
-                    style_from(
-                        theme,
-                        "paragraph.default",
-                        Style::new().fg(Color::Ansi(252)),
-                    ),
-                ))
-                .render(frame, block.inner_area(area));
+
+            Panel::new("Logs")
+                .styles(panel_styles)
+                .padding(Padding::all(1))
+                .render(frame, area, |frame, inner| {
+                    Paragraph::new(lines.join("\n"))
+                        .wrap(WrapMode::NoWrap)
+                        .style(theme.style_or(
+                            "log.line",
+                            theme.style_or("paragraph.default", Style::new().fg(Color::Ansi(252))),
+                        ))
+                        .render(frame, inner);
+                });
         }
 
         if let Some(area) = zones.area("status") {
             StatusBar::new()
                 .left("up/down or j/k: source")
                 .right("1/2/3: theme | q: quit")
-                .style(style_from(
-                    theme,
-                    "statusbar.bg",
-                    style_from(
-                        theme,
-                        "app.footer.bg",
-                        Style::new().bg(Color::Rgb(28, 28, 28)),
-                    ),
-                ))
-                .left_style(style_from(
-                    theme,
-                    "statusbar.left",
-                    style_from(theme, "app.footer.text", Style::new().fg(Color::Ansi(250))),
-                ))
-                .right_style(style_from(
-                    theme,
-                    "statusbar.right",
-                    style_from(theme, "app.footer.text", Style::new().fg(Color::Ansi(250))),
-                ))
+                .style(status_styles.base)
+                .left_style(status_styles.left)
+                .right_style(status_styles.right)
                 .margin(Padding::symmetric(0, 1))
                 .render(frame, area);
         }
     }
-}
-
-fn panel_block(theme: &Theme, title: &str) -> Block {
-    Block::new()
-        .title(title)
-        .body_style(style_from(
-            theme,
-            "panel.body",
-            Style::new().bg(Color::Rgb(22, 32, 56)),
-        ))
-        .border_style(style_from(
-            theme,
-            "panel.border",
-            Style::new().fg(Color::Ansi(39)),
-        ))
-        .title_style(style_from(
-            theme,
-            "panel.title",
-            Style::new().fg(Color::Rgb(200, 220, 255)),
-        ))
-        .padding(Padding::all(1))
-}
-
-fn style_from(theme: &Theme, token: &str, fallback: Style) -> Style {
-    theme.style(token).unwrap_or(fallback)
 }
 
 fn build_layout() -> LayoutNode {
