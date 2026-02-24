@@ -7,8 +7,8 @@ and efficient terminal rendering through frame diffing.
 
 ## Project status
 
-- Current stage: `0.1.0-alpha.1`
-- Phase 1 focus: packaging, baseline tests, Linux CI, and onboarding docs
+- Current stage: `0.2.0-alpha.1`
+- Focus: event-driven runtime, component composition, interface partitioning, perf baseline
 - API is intentionally small and may evolve before a stable `1.0`
 
 ## Requirements
@@ -19,8 +19,10 @@ and efficient terminal rendering through frame diffing.
 ## Quickstart
 
 ```rust
-use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
-use pulse::{run, App, Command, Frame};
+use std::time::Duration;
+
+use crossterm::event::{KeyCode, KeyEventKind};
+use pulse::{run_with_events, App, Command, Event, Frame};
 
 struct Counter {
     value: i32,
@@ -51,21 +53,20 @@ impl App for Counter {
     }
 }
 
-fn map_key(key: KeyEvent) -> Option<Msg> {
-    if key.kind != KeyEventKind::Press {
-        return None;
-    }
-
-    match key.code {
-        KeyCode::Char('+') => Some(Msg::Increment),
-        KeyCode::Char('q') => Some(Msg::Quit),
+fn map_event(event: Event) -> Option<Msg> {
+    match event {
+        Event::Key(key) if key.kind == KeyEventKind::Press => match key.code {
+            KeyCode::Char('+') => Some(Msg::Increment),
+            KeyCode::Char('q') => Some(Msg::Quit),
+            _ => None,
+        },
         _ => None,
     }
 }
 
 fn main() -> std::io::Result<()> {
     let mut app = Counter { value: 0 };
-    run(&mut app, map_key)
+    run_with_events(&mut app, Duration::from_millis(250), map_event)
 }
 ```
 
@@ -89,13 +90,21 @@ cargo run --example resize
 - `App`: application contract with `init`, `update`, and `view`
 - `Command`: post-update action (`none`, `emit`, `batch`, `quit` helpers)
 - `Event`: runtime event type (`Key`, `Resize`, `Tick`)
+- `run_with_events`: preferred event-driven runtime with configurable tick rate
 - `run`: compatibility runtime using a key mapper
-- `run_with_events`: event-driven runtime with configurable tick rate
 - `Frame`: char buffer with clipping and scoped rendering (`render_in`)
 - `Rect`: basic layout primitive with horizontal/vertical splits
 - `LayoutNode` + `Constraint` (`Fixed`, `Percent`, `Fill`): partition trees for screen structure
 - `Padding` + `Text`: simple primitives to visualize and populate resolved zones
 - `Component` and `update_child`: parent/child composition with lifted messages
+
+## Guides
+
+- Architecture: `docs/architecture.md`
+- Interface partitioning: `docs/interface.md`
+- Parent/child composition: `docs/composition.md`
+- Migration notes: `docs/migration-0.2-alpha.md`
+- Performance baseline: `docs/perf.md`
 
 ## Development checks
 

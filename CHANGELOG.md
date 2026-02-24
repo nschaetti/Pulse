@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project follows Semantic Versioning.
 
+## [0.2.0-alpha.1] - 2026-02-24
+
+### Added
+
+- Event-driven runtime API with `Event` (`Key`, `Resize`, `Tick`) and `run_with_events`.
+- Temporary compatibility path via existing `run` key-mapping runtime.
+- Command composition with `Command::Batch` and helper constructors (`none`, `emit`, `batch`, `quit`).
+- Parent/child message lifting helper `update_child` for component composition.
+- Interface partition tree API with `LayoutNode`, `Slot`, `Constraint` (`Fixed`, `Percent`, `Fill`), and `ResolvedLayout`.
+- Layout primitives `Padding` and `Text` for interface scaffolding.
+- New examples: event runtime (`examples/events.rs`), component composition (`examples/composition.rs`), and interface shell (`examples/interface_layout.rs`).
+- Criterion benchmark suites for frame, layout, and command paths (`benches/*.rs`).
+- Report-only performance baseline documentation (`docs/perf.md`).
+- Architecture and migration guides in `docs/`.
+
+### Changed
+
+- Runtime command processing now supports deterministic FIFO scheduling for `Emit` and nested `Batch` commands.
+- README now documents the event-first flow and links to focused guides.
+
+### Notes
+
+- `0.2.0-alpha.1` targets architecture and developer ergonomics before richer widget primitives.
+- `run` remains available for compatibility, but new applications should prefer `run_with_events`.
+
 ## [0.1.0-alpha.1] - 2026-02-24
 
 ### Added
