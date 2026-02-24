@@ -66,3 +66,13 @@ Recommended precedence in applications:
 - explicit inline override
 
 Use this order to keep themes broad and local code intentional.
+
+## Common tokens
+
+Current examples share these tokens:
+
+- `panel.body`, `panel.border`, `panel.title`
+- `list.item`, `list.selected`
+- `text.primary`, `text.muted`, `log.line`
+- `app.header.text`, `app.footer.bg`, `app.footer.text`
+- `settings.*` namespace for settings-specific panels

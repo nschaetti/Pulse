@@ -15,6 +15,18 @@
     "settings.footer.bg": { "fg": { "ansi": 224 }, "bg": { "rgb": [38, 19, 8] } },
     "settings.footer.text": { "fg": { "ansi": 223 } },
 
+    "app.header.text": { "fg": { "ansi": 223 } },
+    "app.footer.bg": { "bg": { "rgb": [38, 19, 8] } },
+    "app.footer.text": { "fg": { "ansi": 223 } },
+
+    "panel.body": { "bg": { "rgb": [66, 34, 15] } },
+    "panel.border": { "fg": { "ansi": 214 } },
+    "panel.title": { "fg": { "rgb": [255, 220, 170] } },
+
+    "text.primary": { "fg": { "ansi": 230 } },
+    "text.muted": { "fg": { "ansi": 223 } },
+    "log.line": { "fg": { "ansi": 230 } },
+
     "list.item": { "fg": { "ansi": 230 }, "bg": { "rgb": [66, 34, 15] } },
     "list.selected": { "fg": { "ansi": 16 }, "bg": { "rgb": [255, 188, 99] }, "modifiers": ["bold"] }
   }

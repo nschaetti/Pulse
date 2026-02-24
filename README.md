@@ -89,6 +89,8 @@ cargo run --example diff
 cargo run --example resize
 ```
 
+Theme-driven examples (`settings`, `admin_console`, `log_explorer`, `interface_layout`) switch palettes with `1/2/3`.
+
 ## Core API
 
 - `App`: application contract with `init`, `update`, and `view`
