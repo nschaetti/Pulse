@@ -33,6 +33,20 @@
     "statusbar.left": { "fg": { "ansi": 151 } },
     "statusbar.right": { "fg": { "ansi": 151 } },
 
+    "tabs.bg": { "bg": { "rgb": [10, 40, 26] } },
+    "tabs.active": { "fg": { "ansi": 16 }, "bg": { "ansi": 121 }, "modifiers": ["bold"] },
+    "tabs.inactive": { "fg": { "ansi": 151 } },
+    "tabs.border": { "fg": { "ansi": 121 } },
+
+    "table.header": { "fg": { "ansi": 194 }, "bg": { "rgb": [12, 56, 32] }, "modifiers": ["bold"] },
+    "table.row": { "fg": { "ansi": 159 } },
+    "table.selected": { "fg": { "ansi": 16 }, "bg": { "rgb": [96, 220, 156] } },
+    "table.border": { "fg": { "ansi": 121 } },
+
+    "field.label": { "fg": { "ansi": 194 }, "modifiers": ["bold"] },
+    "field.help": { "fg": { "ansi": 72 } },
+    "field.error": { "fg": { "ansi": 197 } },
+
     "input.bg": { "bg": { "rgb": [10, 46, 28] } },
     "input.text": { "fg": { "ansi": 194 } },
     "input.placeholder": { "fg": { "ansi": 72 } },

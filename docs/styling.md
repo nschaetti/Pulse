@@ -77,6 +77,9 @@ Current examples share these tokens:
 - `app.header.text`, `app.footer.bg`, `app.footer.text`
 - `statusbar.bg`, `statusbar.left`, `statusbar.right`
 - `input.bg`, `input.text`, `input.placeholder`, `input.cursor`, `input.focus`
+- `tabs.bg`, `tabs.active`, `tabs.inactive`, `tabs.border`
+- `table.header`, `table.row`, `table.selected`, `table.border`
+- `field.label`, `field.help`, `field.error`
 - `settings.*` namespace for settings-specific panels
 
 ## Interactive pattern

@@ -201,6 +201,14 @@ pub enum WrapMode {
     NoWrap,
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum Alignment {
+    #[default]
+    Left,
+    Center,
+    Right,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Paragraph {
     content: String,
@@ -605,6 +613,74 @@ pub struct InputStyle {
     pub cursor: Style,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct TabsStyle {
+    pub base: Style,
+    pub active: Style,
+    pub inactive: Style,
+    pub border: Style,
+}
+
+impl TabsStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: theme.style_or("tabs.bg", Style::new().bg(Color::Rgb(20, 24, 44))),
+            active: theme.style_or(
+                "tabs.active",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+            inactive: theme.style_or("tabs.inactive", Style::new().fg(Color::Ansi(252))),
+            border: theme.style_or("tabs.border", Style::new().fg(Color::Ansi(39))),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct TableStyle {
+    pub base: Style,
+    pub header: Style,
+    pub row: Style,
+    pub selected: Style,
+    pub border: Style,
+}
+
+impl TableStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: Style::default(),
+            header: theme.style_or(
+                "table.header",
+                Style::new().fg(Color::Ansi(230)).bg(Color::Rgb(26, 34, 58)),
+            ),
+            row: theme.style_or("table.row", Style::new().fg(Color::Ansi(252))),
+            selected: theme.style_or(
+                "table.selected",
+                Style::new().fg(Color::Ansi(16)).bg(Color::Ansi(39)),
+            ),
+            border: theme.style_or("table.border", Style::new().fg(Color::Ansi(39))),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FormFieldStyle {
+    pub base: Style,
+    pub label: Style,
+    pub help: Style,
+    pub error: Style,
+}
+
+impl FormFieldStyle {
+    pub fn from_theme(theme: &Theme) -> Self {
+        Self {
+            base: Style::default(),
+            label: theme.style_or("field.label", Style::new().fg(Color::Ansi(252))),
+            help: theme.style_or("field.help", Style::new().fg(Color::Ansi(244))),
+            error: theme.style_or("field.error", Style::new().fg(Color::Ansi(196))),
+        }
+    }
+}
+
 impl InputStyle {
     pub fn from_theme(theme: &Theme) -> Self {
         Self {
@@ -986,6 +1062,425 @@ impl List {
     }
 }
 
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct Tabs {
+    labels: Vec<String>,
+    selected: usize,
+    style: Style,
+    active_style: Option<Style>,
+    inactive_style: Option<Style>,
+    border_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl Tabs {
+    pub fn new<I, S>(labels: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: Into<String>,
+    {
+        Self {
+            labels: labels.into_iter().map(Into::into).collect(),
+            selected: 0,
+            style: Style::default(),
+            active_style: None,
+            inactive_style: None,
+            border_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn selected(mut self, selected: usize) -> Self {
+        self.selected = selected;
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn active_style(mut self, style: Style) -> Self {
+        self.active_style = Some(style);
+        self
+    }
+
+    pub fn inactive_style(mut self, style: Style) -> Self {
+        self.inactive_style = Some(style);
+        self
+    }
+
+    pub fn border_style(mut self, style: Style) -> Self {
+        self.border_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 || self.labels.is_empty() {
+            return;
+        }
+
+        let selected = self.selected.min(self.labels.len().saturating_sub(1));
+        let base = self.style;
+        let active = self.active_style.unwrap_or(base);
+        let inactive = self.inactive_style.unwrap_or(base);
+        let border = self.border_style.unwrap_or(base);
+        let width = area.width as usize;
+
+        frame.render_in(area, |frame| {
+            frame.print_styled(0, 0, &" ".repeat(width), base);
+            frame.print_styled(0, 0, "[", border);
+
+            let mut cursor = 1usize;
+            for (idx, label) in self.labels.iter().enumerate() {
+                let tab = format!(" {} ", label);
+                let clipped = truncate_to_width(&tab, width.saturating_sub(cursor));
+                if clipped.is_empty() {
+                    break;
+                }
+                frame.print_styled(
+                    cursor as u16,
+                    0,
+                    &clipped,
+                    if idx == selected { active } else { inactive },
+                );
+                cursor += clipped.chars().count();
+                if cursor >= width.saturating_sub(1) {
+                    break;
+                }
+                frame.print_styled(cursor as u16, 0, "|", border);
+                cursor += 1;
+            }
+
+            if width > 1 {
+                frame.print_styled((width - 1) as u16, 0, "]", border);
+            }
+        });
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TableColumn {
+    pub title: String,
+    pub width: Constraint,
+    pub align: Alignment,
+}
+
+impl TableColumn {
+    pub fn new(title: impl Into<String>, width: Constraint) -> Self {
+        Self {
+            title: title.into(),
+            width,
+            align: Alignment::Left,
+        }
+    }
+
+    pub fn align(mut self, align: Alignment) -> Self {
+        self.align = align;
+        self
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Table {
+    columns: Vec<TableColumn>,
+    rows: Vec<Vec<String>>,
+    selected: Option<usize>,
+    scroll: Option<usize>,
+    style: Style,
+    header_style: Option<Style>,
+    row_style: Option<Style>,
+    selected_style: Option<Style>,
+    border_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl Table {
+    pub fn new(columns: Vec<TableColumn>, rows: Vec<Vec<String>>) -> Self {
+        Self {
+            columns,
+            rows,
+            selected: None,
+            scroll: None,
+            style: Style::default(),
+            header_style: None,
+            row_style: None,
+            selected_style: None,
+            border_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn selected(mut self, selected: usize) -> Self {
+        self.selected = Some(selected);
+        self
+    }
+
+    pub fn scroll(mut self, scroll: usize) -> Self {
+        self.scroll = Some(scroll);
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn header_style(mut self, style: Style) -> Self {
+        self.header_style = Some(style);
+        self
+    }
+
+    pub fn row_style(mut self, style: Style) -> Self {
+        self.row_style = Some(style);
+        self
+    }
+
+    pub fn selected_style(mut self, style: Style) -> Self {
+        self.selected_style = Some(style);
+        self
+    }
+
+    pub fn border_style(mut self, style: Style) -> Self {
+        self.border_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(&self, frame: &mut Frame, area: Rect) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 || self.columns.is_empty() {
+            return;
+        }
+
+        let base = self.style;
+        let header_style = self.header_style.unwrap_or(base);
+        let row_style = self.row_style.unwrap_or(base);
+        let selected_style = self.selected_style.unwrap_or(row_style);
+        let border_style = self.border_style.unwrap_or(header_style);
+
+        let column_slots: Vec<Slot> = self
+            .columns
+            .iter()
+            .map(|col| Slot::new(col.width, LayoutNode::leaf("col")))
+            .collect();
+        let widths = resolve_sizes(area.width, &column_slots);
+
+        frame.render_in(area, |frame| {
+            frame.print_styled(0, 0, &" ".repeat(area.width as usize), header_style);
+            let mut x = 0u16;
+            for (idx, col) in self.columns.iter().enumerate() {
+                let width = widths[idx] as usize;
+                if width == 0 {
+                    continue;
+                }
+                let header = align_text(&truncate_to_width(&col.title, width), width, col.align);
+                frame.print_styled(x, 0, &header, header_style);
+                x = x.saturating_add(widths[idx]);
+            }
+
+            if area.height > 1 {
+                frame.print_styled(0, 1, &"─".repeat(area.width as usize), border_style);
+            }
+
+            let body_height = area.height.saturating_sub(2) as usize;
+            if body_height == 0 || self.rows.is_empty() {
+                return;
+            }
+
+            let selected = self
+                .selected
+                .unwrap_or(0)
+                .min(self.rows.len().saturating_sub(1));
+            let start = self
+                .scroll
+                .unwrap_or_else(|| scroll_start(selected, body_height, self.rows.len()));
+            let end = (start + body_height).min(self.rows.len());
+
+            for (row_y, row_idx) in (start..end).enumerate() {
+                let y = (row_y + 2) as u16;
+                frame.print_styled(
+                    0,
+                    y,
+                    &" ".repeat(area.width as usize),
+                    if row_idx == selected {
+                        selected_style
+                    } else {
+                        row_style
+                    },
+                );
+
+                let mut x = 0u16;
+                for (col_idx, col) in self.columns.iter().enumerate() {
+                    let width = widths[col_idx] as usize;
+                    if width == 0 {
+                        continue;
+                    }
+                    let cell = self
+                        .rows
+                        .get(row_idx)
+                        .and_then(|row| row.get(col_idx))
+                        .map(|s| s.as_str())
+                        .unwrap_or("");
+                    let aligned = align_text(&truncate_to_width(cell, width), width, col.align);
+                    frame.print_styled(
+                        x,
+                        y,
+                        &aligned,
+                        if row_idx == selected {
+                            selected_style
+                        } else {
+                            row_style
+                        },
+                    );
+                    x = x.saturating_add(widths[col_idx]);
+                }
+            }
+        });
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FormField {
+    label: String,
+    help_text: Option<String>,
+    error_text: Option<String>,
+    style: Style,
+    label_style: Option<Style>,
+    help_style: Option<Style>,
+    error_style: Option<Style>,
+    padding: Padding,
+    margin: Padding,
+}
+
+impl FormField {
+    pub fn new(label: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            help_text: None,
+            error_text: None,
+            style: Style::default(),
+            label_style: None,
+            help_style: None,
+            error_style: None,
+            padding: Padding::default(),
+            margin: Padding::default(),
+        }
+    }
+
+    pub fn help_text(mut self, text: impl Into<String>) -> Self {
+        self.help_text = Some(text.into());
+        self
+    }
+
+    pub fn error_text(mut self, text: impl Into<String>) -> Self {
+        self.error_text = Some(text.into());
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn label_style(mut self, style: Style) -> Self {
+        self.label_style = Some(style);
+        self
+    }
+
+    pub fn help_style(mut self, style: Style) -> Self {
+        self.help_style = Some(style);
+        self
+    }
+
+    pub fn error_style(mut self, style: Style) -> Self {
+        self.error_style = Some(style);
+        self
+    }
+
+    pub fn padding(mut self, padding: Padding) -> Self {
+        self.padding = padding;
+        self
+    }
+
+    pub fn margin(mut self, margin: Padding) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn render(
+        &self,
+        frame: &mut Frame,
+        area: Rect,
+        render_control: impl FnOnce(&mut Frame, Rect),
+    ) {
+        let area = self.padding.apply(self.margin.apply(area));
+        if area.width == 0 || area.height == 0 {
+            return;
+        }
+
+        let label_style = self.label_style.unwrap_or(self.style);
+        let help_style = self.help_style.unwrap_or(self.style);
+        let error_style = self.error_style.unwrap_or(self.style);
+
+        frame.render_in(area, |frame| {
+            frame.print_styled(
+                0,
+                0,
+                &truncate_to_width(&self.label, area.width as usize),
+                label_style,
+            );
+
+            let footer = self.error_text.as_ref().or(self.help_text.as_ref());
+            let footer_style = if self.error_text.is_some() {
+                error_style
+            } else {
+                help_style
+            };
+            let footer_rows = u16::from(footer.is_some());
+            let control_y = 1;
+            let control_h = area.height.saturating_sub(1).saturating_sub(footer_rows);
+            if control_h > 0 {
+                render_control(frame, Rect::new(0, control_y, area.width, control_h));
+            }
+
+            if let Some(footer_text) = footer {
+                let y = area.height.saturating_sub(1);
+                frame.print_styled(
+                    0,
+                    y,
+                    &truncate_to_width(footer_text, area.width as usize),
+                    footer_style,
+                );
+            }
+        });
+    }
+}
+
 #[derive(Clone, Copy)]
 struct BorderGlyphs {
     horizontal: &'static str,
@@ -1100,6 +1595,23 @@ fn wrap_lines(text: &str, width: usize, wrap: WrapMode) -> Vec<String> {
 
 fn truncate_to_width(input: &str, width: usize) -> String {
     input.chars().take(width).collect()
+}
+
+fn align_text(text: &str, width: usize, align: Alignment) -> String {
+    let text_width = text.chars().count().min(width);
+    let free = width.saturating_sub(text_width);
+    let (left, right) = match align {
+        Alignment::Left => (0, free),
+        Alignment::Center => (free / 2, free - (free / 2)),
+        Alignment::Right => (free, 0),
+    };
+
+    format!(
+        "{}{}{}",
+        " ".repeat(left),
+        truncate_to_width(text, width),
+        " ".repeat(right)
+    )
 }
 
 fn replace_segment(target: &mut String, start: usize, segment: &str) {
@@ -1235,9 +1747,10 @@ mod tests {
     use crate::Frame;
 
     use super::{
-        apply_input_edit, Block, BorderType, Borders, Constraint, Direction, Input, InputEdit,
-        InputStyle, LayoutNode, List, ListStyle, Padding, Panel, PanelStyle, Paragraph, Slot,
-        StatusBar, StatusBarStyle, Text, WrapMode,
+        apply_input_edit, Alignment, Block, BorderType, Borders, Constraint, Direction, FormField,
+        FormFieldStyle, Input, InputEdit, InputStyle, LayoutNode, List, ListStyle, Padding, Panel,
+        PanelStyle, Paragraph, Slot, StatusBar, StatusBarStyle, Table, TableColumn, TableStyle,
+        Tabs, TabsStyle, Text, WrapMode,
     };
     use crate::{Color, Rect, Style, Theme};
 
@@ -1562,5 +2075,72 @@ mod tests {
 
         assert_eq!(frame.char_at(2, 0), Some('x'));
         assert_eq!(frame.char_at(1, 1), Some('o'));
+    }
+
+    #[test]
+    fn tabs_highlights_selected_tab() {
+        let mut frame = Frame::new(20, 1);
+        let active = Style::new().bg(Color::Ansi(39));
+        Tabs::new(["A", "B", "C"])
+            .selected(1)
+            .active_style(active)
+            .render(&mut frame, Rect::new(0, 0, 20, 1));
+
+        assert_eq!(frame.char_at(6, 0), Some('B'));
+        assert_eq!(frame.style_at(6, 0), Some(active));
+    }
+
+    #[test]
+    fn table_supports_center_and_right_alignment() {
+        let mut frame = Frame::new(12, 4);
+        let columns = vec![
+            TableColumn::new("L", Constraint::Fixed(4)),
+            TableColumn::new("C", Constraint::Fixed(4)).align(Alignment::Center),
+            TableColumn::new("R", Constraint::Fixed(4)).align(Alignment::Right),
+        ];
+        let rows = vec![vec!["a".into(), "b".into(), "c".into()]];
+        Table::new(columns, rows).render(&mut frame, Rect::new(0, 0, 12, 4));
+
+        assert_eq!(frame.char_at(0, 2), Some('a'));
+        assert_eq!(frame.char_at(5, 2), Some('b'));
+        assert_eq!(frame.char_at(11, 2), Some('c'));
+    }
+
+    #[test]
+    fn form_field_renders_label_and_help() {
+        let mut frame = Frame::new(20, 4);
+        FormField::new("Name").help_text("Required").render(
+            &mut frame,
+            Rect::new(0, 0, 20, 4),
+            |f, area| {
+                f.render_in(area, |f| f.print(0, 0, "input"));
+            },
+        );
+
+        assert_eq!(frame.char_at(0, 0), Some('N'));
+        assert_eq!(frame.char_at(0, 1), Some('i'));
+        assert_eq!(frame.char_at(0, 3), Some('R'));
+    }
+
+    #[test]
+    fn advanced_style_bundles_use_theme_tokens() {
+        let theme = Theme::from_json_str(
+            r#"{
+              "tokens": {
+                "tabs.active": { "fg": { "ansi": 10 } },
+                "table.header": { "fg": { "ansi": 11 } },
+                "field.error": { "fg": { "ansi": 9 } }
+              }
+            }"#,
+        )
+        .expect("theme should parse");
+
+        let tabs = TabsStyle::from_theme(&theme);
+        let table = TableStyle::from_theme(&theme);
+        let field = FormFieldStyle::from_theme(&theme);
+
+        assert_eq!(tabs.active.fg, Some(Color::Ansi(10)));
+        assert_eq!(table.header.fg, Some(Color::Ansi(11)));
+        assert_eq!(field.error.fg, Some(Color::Ansi(9)));
     }
 }

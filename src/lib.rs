@@ -21,7 +21,8 @@ pub use runtime::run_with_events;
 pub use style::{Color, Modifier, ModifierSet, Style};
 pub use theme::{Theme, ThemeError};
 pub use ui::{
-    apply_input_edit, Block, BorderType, Borders, Constraint, Direction, Input, InputEdit,
-    InputStyle, LayoutNode, List, ListStyle, Padding, Panel, PanelStyle, Paragraph, ResolvedLayout,
-    Slot, StatusBar, StatusBarStyle, Text, WrapMode, Zone,
+    apply_input_edit, Alignment, Block, BorderType, Borders, Constraint, Direction, FormField,
+    FormFieldStyle, Input, InputEdit, InputStyle, LayoutNode, List, ListStyle, Padding, Panel,
+    PanelStyle, Paragraph, ResolvedLayout, Slot, StatusBar, StatusBarStyle, Table, TableColumn,
+    TableStyle, Tabs, TabsStyle, Text, WrapMode, Zone,
 };

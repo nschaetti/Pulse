@@ -83,6 +83,9 @@ cargo run --example styled_text
 cargo run --example admin_console
 cargo run --example settings
 cargo run --example log_explorer
+cargo run --example tabs_demo
+cargo run --example table_demo
+cargo run --example form_demo
 cargo run --example layout_demo
 cargo run --example clipping
 cargo run --example diff
@@ -106,6 +109,7 @@ Theme-driven examples (`settings`, `admin_console`, `log_explorer`, `interface_l
 - `Padding` + `Text`: simple primitives to visualize and populate resolved zones
 - `Block` + `List`: baseline widgets for framed sections and scrollable selection
 - `Paragraph` + `StatusBar` + `Input`: higher-level text, status, and editing widgets
+- `Tabs` + `Table` + `FormField`: advanced navigation, data, and form composition widgets
 - `Component` and `update_child`: parent/child composition with lifted messages
 
 Inline styling quick sample:
@@ -132,6 +136,7 @@ let list = List::new(["Overview", "Metrics", "Logs"])
 - Build app guide: `docs/build-app.md`
 - Parent/child composition: `docs/composition.md`
 - Styling guide: `docs/styling.md`
+- Advanced widgets: `docs/widgets-advanced.md`
 - Migration notes: `docs/migration-0.2-alpha.md`
 - Performance baseline: `docs/perf.md`
 
