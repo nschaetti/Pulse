@@ -29,3 +29,7 @@ harness = false
 [[bench]]
 name = "command_bench"
 harness = false
+
+[[bench]]
+name = "style_bench"
+harness = false
