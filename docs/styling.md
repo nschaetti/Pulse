@@ -78,3 +78,15 @@ Current examples share these tokens:
 - `statusbar.bg`, `statusbar.left`, `statusbar.right`
 - `input.bg`, `input.text`, `input.placeholder`, `input.cursor`, `input.focus`
 - `settings.*` namespace for settings-specific panels
+
+## Interactive pattern
+
+For a themed settings screen with live filtering:
+
+1. Keep an input value and cursor in app state.
+2. Toggle input focus (for example with `/`).
+3. Apply `InputEdit` only when input is focused.
+4. Derive a filtered list from the current query.
+5. Clamp the selected index when filtered results change.
+
+See `examples/settings.rs` for a complete implementation using `Input`, `List`, and token-based styles.

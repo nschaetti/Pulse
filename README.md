@@ -129,6 +129,7 @@ let list = List::new(["Overview", "Metrics", "Logs"])
 
 - Architecture: `docs/architecture.md`
 - Interface partitioning: `docs/interface.md`
+- Build app guide: `docs/build-app.md`
 - Parent/child composition: `docs/composition.md`
 - Styling guide: `docs/styling.md`
 - Migration notes: `docs/migration-0.2-alpha.md`

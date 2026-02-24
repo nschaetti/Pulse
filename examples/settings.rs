@@ -157,16 +157,26 @@ impl App for SettingsApp {
     fn update(&mut self, msg: Self::Msg) -> Command<Self::Msg> {
         match msg {
             Msg::Up => {
-                self.selected = self.selected.saturating_sub(1);
+                if !self.input_focused {
+                    self.selected = self.selected.saturating_sub(1);
+                    self.clamp_selected_to_filtered();
+                }
                 Command::none()
             }
             Msg::Down => {
-                self.selected = (self.selected + 1).min(CATEGORIES.len().saturating_sub(1));
+                if !self.input_focused {
+                    let len = self.filtered_categories().len();
+                    if len > 0 {
+                        self.selected = (self.selected + 1).min(len.saturating_sub(1));
+                    }
+                    self.clamp_selected_to_filtered();
+                }
                 Command::none()
             }
             Msg::Edit(edit) => {
                 if self.input_focused {
                     apply_input_edit(&mut self.filter, &mut self.cursor, edit);
+                    self.clamp_selected_to_filtered();
                 }
                 Command::none()
             }
@@ -186,6 +196,8 @@ impl App for SettingsApp {
         let root = Rect::new(0, 0, frame.width(), frame.height());
         let zones = self.layout.resolve(root);
         let palette = Palette::from_theme(&self.themes[self.theme_idx]);
+        let filtered = self.filtered_categories();
+        let selected_category = self.selected_category();
 
         if let Some(area) = zones.area("title") {
             fill_area(frame, area, palette.title_bg);
@@ -210,18 +222,30 @@ impl App for SettingsApp {
                 .style(palette.categories_title)
                 .margin(Padding::symmetric(0, 1))
                 .render(frame, area);
-            List::new(CATEGORIES)
-                .selected(self.selected)
-                .item_style(palette.list_item)
-                .selected_style(palette.list_selected)
-                .selected_prefix("›")
-                .margin(Padding {
-                    top: 2,
-                    right: 1,
-                    bottom: 0,
-                    left: 1,
-                })
-                .render(frame, area);
+            if filtered.is_empty() {
+                Text::new(format!("No results for '{}'", self.filter))
+                    .style(palette.details_text)
+                    .margin(Padding {
+                        top: 2,
+                        right: 1,
+                        bottom: 0,
+                        left: 1,
+                    })
+                    .render(frame, area);
+            } else {
+                List::new(filtered.iter().copied())
+                    .selected(self.selected.min(filtered.len().saturating_sub(1)))
+                    .item_style(palette.list_item)
+                    .selected_style(palette.list_selected)
+                    .selected_prefix("›")
+                    .margin(Padding {
+                        top: 2,
+                        right: 1,
+                        bottom: 0,
+                        left: 1,
+                    })
+                    .render(frame, area);
+            }
         }
 
         if let Some(area) = zones.area("details") {
@@ -265,19 +289,16 @@ impl App for SettingsApp {
                     left: 1,
                 })
                 .render(frame, area);
-            Text::new(format!("Section: {}", CATEGORIES[self.selected]))
-                .style(palette.details_section)
-                .margin(Padding {
-                    top: 5,
-                    right: 1,
-                    bottom: 0,
-                    left: 1,
-                })
-                .render(frame, area);
-            Text::new("- Placeholder option A\n- Placeholder option B\n- Placeholder option C")
+            Text::new(match selected_category {
+                Some(section) => format!(
+                    "Section: {}\n\n- Placeholder option A\n- Placeholder option B\n- Placeholder option C",
+                    section
+                ),
+                None => "No category selected\n\nAdjust the filter to see matching sections.".to_string(),
+            })
                 .style(palette.details_text)
                 .margin(Padding {
-                    top: 7,
+                    top: 5,
                     right: 1,
                     bottom: 0,
                     left: 1,
@@ -292,6 +313,39 @@ impl App for SettingsApp {
                 .margin(Padding::symmetric(0, 1))
                 .render(frame, area);
         }
+    }
+}
+
+impl SettingsApp {
+    fn filtered_categories(&self) -> Vec<&'static str> {
+        let query = self.filter.trim().to_lowercase();
+        if query.is_empty() {
+            return CATEGORIES.to_vec();
+        }
+
+        CATEGORIES
+            .iter()
+            .copied()
+            .filter(|category| category.to_lowercase().contains(&query))
+            .collect()
+    }
+
+    fn selected_category(&self) -> Option<&'static str> {
+        let filtered = self.filtered_categories();
+        if filtered.is_empty() {
+            None
+        } else {
+            Some(filtered[self.selected.min(filtered.len().saturating_sub(1))])
+        }
+    }
+
+    fn clamp_selected_to_filtered(&mut self) {
+        let len = self.filtered_categories().len();
+        if len == 0 {
+            self.selected = 0;
+            return;
+        }
+        self.selected = self.selected.min(len.saturating_sub(1));
     }
 }
 

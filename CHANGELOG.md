@@ -31,6 +31,7 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - `examples/settings.rs` now loads external theme files from `themes/*.json` and switches themes at runtime.
 - `examples/admin_console.rs`, `examples/log_explorer.rs`, and `examples/interface_layout.rs` now use external JSON themes and runtime palette switching.
 - `settings`, `log_explorer`, and footer bars now use the new widget layer (`Input`, `Paragraph`, `StatusBar`).
+- `examples/settings.rs` now applies live list filtering with focus-aware input editing and stable selection clamping.
 
 ### Notes
 
